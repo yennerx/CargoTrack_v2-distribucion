@@ -1,0 +1,28 @@
+<div
+  id="session-timeout-config"
+  data-session-timeout-seconds="{{ session_idle_timeout_seconds }}"
+  data-session-deadline-ms="{{ session_idle_deadline_ms }}"
+  data-session-activity-url="{% url 'accounts:activity' %}"
+  data-session-login-url="{% url 'accounts:login' %}"
+>
+  <div
+    class="session-timeout-warning"
+    id="session-timeout-warning"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="session-timeout-title"
+    aria-describedby="session-timeout-message"
+    hidden
+  >
+    <div class="session-timeout-card">
+      <h2 id="session-timeout-title">Sesión por vencer</h2>
+      <p id="session-timeout-message" aria-live="assertive">
+        Tu sesión se cerrará por inactividad en
+        <strong id="session-timeout-countdown">01:00</strong>.
+      </p>
+      <button type="button" class="btn btn-primary" id="session-timeout-continue">
+        Continuar sesión
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ report_title }} | CargoTrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+  <div><p class="eyebrow mb-1">Reportes administrativos</p><h1 class="h3">{{ report_title }}</h1></div>
+  <a class="btn btn-outline-secondary" href="{% url 'reports:dashboard' %}">Reportes</a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-2"><label class="form-label" for="id_date_from">Creado desde</label>{{ form.date_from }}{{ form.date_from.errors }}</div>
+      <div class="col-md-2"><label class="form-label" for="id_date_to">Creado hasta</label>{{ form.date_to }}{{ form.date_to.errors }}</div>
+      {% if "query" in form.fields %}<div class="col-md-3"><label class="form-label" for="id_query">Buscar</label>{{ form.query }}</div>{% endif %}
+      {% if "is_active" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_is_active">Estado</label>{{ form.is_active }}</div>{% endif %}
+      {% if "group" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_group">Rol</label>{{ form.group }}</div>{% endif %}
+      {% if "carrier_type" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_carrier_type">Tipo</label>{{ form.carrier_type }}</div>{% endif %}
+      {% if "is_validated" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_is_validated">Validación</label>{{ form.is_validated }}</div>{% endif %}
+      {% if "incident_status" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_incident_status">Estado</label>{{ form.incident_status }}</div>{% endif %}
+      {% if "priority" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_priority">Prioridad / criticidad</label>{{ form.priority }}</div>{% endif %}
+      {% if "incident_type" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_incident_type">Tipo de incidencia</label>{{ form.incident_type }}</div>{% endif %}
+      {% if "assigned_to" in form.fields %}<div class="col-md-2"><label class="form-label" for="id_assigned_to">Responsable</label>{{ form.assigned_to }}</div>{% endif %}
+      <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+      {% if export_allowed and filters_valid %}<div class="col-md-2"><a class="btn btn-outline-success w-100" href="?{{ export_querystring }}">Exportar CSV</a></div>{% endif %}
+    </form>
+    {% if form.errors %}
+      <div class="alert alert-danger mt-3 mb-0" role="alert">
+        <strong>Filtros inválidos.</strong> Corríjalos; no se ejecutó el reporte.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead>
+        {% if report_type == "users" %}
+          <tr><th>Usuario</th><th>Nombre</th><th>Roles</th><th>Estado</th><th>Creado</th><th>Último acceso</th></tr>
+        {% elif report_type == "customers" %}
+          <tr><th>NIT</th><th>Razón social</th><th>Nombre comercial</th><th>Ciudad</th><th>Estado</th><th>Creado</th></tr>
+        {% elif report_type == "carriers" %}
+          <tr><th>NIT</th><th>Nombre</th><th>Tipo</th><th>Ciudad</th><th>Estado</th><th>Validación</th><th>Creado</th></tr>
+        {% else %}
+          <tr><th>Orden</th><th>Cliente</th><th>Incidencia</th><th>Tipo</th><th>Prioridad / criticidad</th><th>Estado</th><th>Responsable</th><th>Creada</th></tr>
+        {% endif %}
+      </thead>
+      <tbody>
+        {% if not filters_valid %}
+          <tr><td colspan="8" class="p-3">Corrija los filtros para consultar resultados.</td></tr>
+        {% else %}
+          {% for row in rows %}
+            {% if report_type == "users" %}
+              <tr><td>{{ row.username }}</td><td>{{ row.get_full_name|default:"-" }}</td><td>{% for group in row.groups.all %}{{ group.name }}{% if not forloop.last %}, {% endif %}{% empty %}Sin rol{% endfor %}</td><td>{% if row.is_active %}Habilitado{% else %}Deshabilitado{% endif %}</td><td>{{ row.date_joined|date:"d/m/Y" }}</td><td>{{ row.last_login|date:"d/m/Y H:i"|default:"-" }}</td></tr>
+            {% elif report_type == "customers" %}
+              <tr><td>{{ row.nit }}</td><td>{{ row.legal_name }}</td><td>{{ row.commercial_name|default:"-" }}</td><td>{{ row.city|default:"-" }}</td><td>{% if row.is_active %}Habilitado{% else %}Deshabilitado{% endif %}</td><td>{{ row.created_at|date:"d/m/Y" }}</td></tr>
+            {% elif report_type == "carriers" %}
+              <tr><td>{{ row.nit }}</td><td>{{ row.legal_name }}</td><td>{{ row.get_carrier_type_display }}</td><td>{{ row.city|default:"-" }}</td><td>{% if row.is_active %}Habilitado{% else %}Deshabilitado{% endif %}</td><td>{% if row.is_validated %}Validado{% else %}No validado{% endif %}</td><td>{{ row.created_at|date:"d/m/Y" }}</td></tr>
+            {% else %}
+              <tr><td><a href="{% url 'orders:detail' row.order_id %}">{{ row.order.number }}</a></td><td>{{ row.order.customer.legal_name }}</td><td><a href="{% url 'incidents:detail' row.pk %}">{{ row.title }}</a></td><td>{{ row.incident_type.name }}</td><td>{{ row.priority.name }}{% if row.priority.code == "critica" and row.status != "closed" and row.status != "resolved" %} <span class="badge text-bg-danger">Crítica abierta</span>{% endif %}</td><td>{{ row.get_status_display }}</td><td>{{ row.assigned_to.get_username|default:"Sin asignar" }}</td><td>{{ row.created_at|date:"d/m/Y H:i" }}</td></tr>
+            {% endif %}
+          {% empty %}
+            <tr><td colspan="8" class="p-3">Sin resultados para los filtros seleccionados.</td></tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white">
+      <nav aria-label="Paginación del reporte">
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?{% if filter_querystring %}{{ filter_querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a></li>{% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?{% if filter_querystring %}{{ filter_querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a></li>{% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Comisiones | CargoTrack{% endblock %}
+{% block content %}
+<div class="mb-4"><p class="eyebrow mb-1">Control financiero</p><h1 class="h3">Comisiones</h1></div>
+<div class="card border-0 shadow-sm mb-4"><div class="card-body"><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Orden</th><th>Broker</th><th>Comisión</th><th>Pagable</th><th>Estado</th></tr></thead><tbody>{% for commission in commissions %}<tr><td><a href="{% url 'finance:commission-detail' commission.pk %}">{{ commission.order.number }}</a></td><td>{{ commission.broker }}</td><td>{{ commission.commission_amount_usd }}</td><td>{{ commission.payable_amount_usd }}</td><td>{{ commission.get_status_display }}</td></tr>{% empty %}<tr><td colspan="5">Sin comisiones.</td></tr>{% endfor %}</tbody></table></div></div></div>
+<div class="card border-0 shadow-sm"><div class="card-body"><h2 class="h5">Deudas de brokers pendientes</h2><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Broker</th><th>Origen</th><th>Saldo</th><th>Estado</th></tr></thead><tbody>{% for debt in debts %}<tr><td>{{ debt.broker }}</td><td>{{ debt.origin_commission.order.number }}</td><td>{{ debt.balance_usd }}</td><td>{{ debt.get_status_display }}</td></tr>{% empty %}<tr><td colspan="4">Sin deudas pendientes.</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% endblock %}

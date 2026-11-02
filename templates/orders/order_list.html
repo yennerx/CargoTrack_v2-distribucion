@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Órdenes | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-1">Operación</p>
+      <h1 class="h3 mb-1">Órdenes de despacho</h1>
+      <p class="text-secondary mb-0">Consulta y gestión del expediente operativo.</p>
+    </div>
+    {% if perms.orders.add_order %}<a class="btn btn-primary ms-auto" href="{% url 'orders:create' %}">Nueva orden</a>{% endif %}
+  </div>
+
+  <form class="card card-body border-0 shadow-sm mb-4" method="get">
+    <div class="row g-2 align-items-end">
+      <div class="col-12 col-md-7">
+        <label class="form-label" for="id_q">Buscar</label>
+        <input class="form-control" id="id_q" name="q" value="{{ query }}" placeholder="Número, cliente o transportista">
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label" for="id_status">Estado operativo</label>
+        <select class="form-select" id="id_status" name="status">
+          <option value="">Todos</option>
+          {% for entry in status_options %}<option value="{{ entry.code }}" {% if status == entry.code %}selected{% endif %}>{{ entry.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label" for="id_closure">Estado de cierre</label>
+        <select class="form-select" id="id_closure" name="closure">
+          <option value="">Todos</option>
+          {% for code, name in closure_status_options %}<option value="{{ code }}" {% if closure_status == code %}selected{% endif %}>{{ name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-md-2 form-check mb-2"><input class="form-check-input" type="checkbox" name="atrasadas" value="1" id="id_atrasadas" {% if overdue %}checked{% endif %}><label class="form-check-label" for="id_atrasadas">Solo atrasadas</label></div>
+      <div class="col-12 col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Buscar</button></div>
+    </div>
+  </form>
+
+  <div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table align-middle mb-0">
+    <thead><tr><th>Orden</th><th>Cliente</th><th>Ruta</th><th>Estados</th><th>Creación</th><th></th></tr></thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td><a href="{% url 'orders:detail' order.pk %}"><code>{{ order.number }}</code></a></td>
+          <td>{{ order.customer.legal_name }}</td>
+          <td>{{ order.origin }} <span class="text-secondary">→</span> {{ order.destination }}</td>
+          <td><span class="badge text-bg-light">{{ order.status.name }}</span><span class="badge text-bg-secondary ms-1">{{ order.get_closure_status_display }}</span>{% if order.is_overdue %}<span class="badge text-bg-danger ms-1">Atrasada</span>{% endif %}</td>
+          <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+          <td><a class="btn btn-sm btn-outline-secondary" href="{% url 'orders:detail' order.pk %}">Ver</a></td>
+        </tr>
+      {% empty %}<tr><td colspan="6" class="text-center text-secondary py-4">No hay órdenes para mostrar.</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+  {% if page_obj.paginator.num_pages > 1 %}<div class="card-footer bg-white d-flex justify-content-between align-items-center"><span class="small text-secondary">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span><div class="btn-group">{% if page_obj.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?q={{ query|urlencode }}&status={{ status|urlencode }}&closure={{ closure_status|urlencode }}&atrasadas={% if overdue %}1{% endif %}&page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}{% if page_obj.has_next %}<a class="btn btn-sm btn-outline-secondary" href="?q={{ query|urlencode }}&status={{ status|urlencode }}&closure={{ closure_status|urlencode }}&atrasadas={% if overdue %}1{% endif %}&page={{ page_obj.next_page_number }}">Siguiente</a>{% endif %}</div></div>{% endif %}</div>
+{% endblock %}

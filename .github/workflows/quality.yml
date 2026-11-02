@@ -1,0 +1,158 @@
+name: Aseguramiento de calidad
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-analysis:
+    name: Ruff y comprobaciones Django
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar herramientas del proyecto
+        run: python -m pip install -r requirements.txt
+
+      - name: Crear carpeta de reportes
+        run: mkdir -p sqa-artifacts
+
+      - name: Ruff
+        run: ruff check . --output-format=json --output-file=sqa-artifacts/ruff.json
+
+      - name: Comprobación Django
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.development
+          DJANGO_SECRET_KEY: ci-only-not-a-secret
+        run: python manage.py check
+
+      - name: Publicar reporte Ruff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruff-${{ github.sha }}
+          path: sqa-artifacts/ruff.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  tests-and-coverage:
+    name: Pruebas y cobertura PostgreSQL
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cargotrack_ci
+          POSTGRES_USER: cargotrack_ci
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cargotrack_ci -d cargotrack_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DJANGO_SECRET_KEY: ci-only-not-a-secret
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      POSTGRES_DB: cargotrack_ci
+      POSTGRES_USER: cargotrack_ci
+      POSTGRES_PASSWORD: ci-only-password
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependencias
+        run: python -m pip install -r requirements.txt
+
+      - name: Comprobar Django
+        run: python manage.py check
+
+      - name: Aplicar migraciones en PostgreSQL limpio
+        run: python manage.py migrate --noinput
+
+      - name: Confirmar migraciones aplicadas
+        run: python manage.py migrate --check
+
+      - name: Detectar cambios de modelos sin migración
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Crear carpeta para evidencia
+        run: mkdir -p sqa-artifacts/coverage-html
+
+      - name: Ejecutar suite con cobertura de líneas y ramas
+        run: >-
+          pytest
+          --junitxml=sqa-artifacts/junit.xml
+          --cov=apps
+          --cov-branch
+          --cov-report=term-missing
+          --cov-report=xml:sqa-artifacts/coverage.xml
+          --cov-report=json:sqa-artifacts/coverage.json
+          --cov-report=html:sqa-artifacts/coverage-html
+
+      - name: Validar mínimos separados de cobertura
+        if: always()
+        run: python scripts/check_coverage.py sqa-artifacts/coverage.json
+
+      - name: Publicar pruebas y reportes de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pruebas-cobertura-${{ github.sha }}
+          path: sqa-artifacts/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  docker-artifact:
+    name: Construcción de artefacto Docker
+    runs-on: ubuntu-latest
+    needs:
+      - static-analysis
+      - tests-and-coverage
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Construir imagen local
+        run: docker build --pull --tag "cargotrack:${GITHUB_SHA}" .
+
+      - name: Empaquetar imagen sin publicarla
+        run: |
+          mkdir -p dist
+          docker save "cargotrack:${GITHUB_SHA}" | gzip -n > "dist/cargotrack-${GITHUB_SHA}.tar.gz"
+          sha256sum "dist/cargotrack-${GITHUB_SHA}.tar.gz" > "dist/cargotrack-${GITHUB_SHA}.sha256"
+
+      - name: Publicar artefacto Docker
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagen-docker-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30

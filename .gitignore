@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+coverage.json
+test-results/
+artifacts/
+dist/
+.venv/
+venv/
+
+# Environment and secrets
+.env
+!.env.example
+
+# Django
+db.sqlite3
+staticfiles/
+
+# Local application data
+data/Adjuntos/*
+!data/Adjuntos/.gitkeep
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+
+# Material interno/local no incluido en la distribución
+docs/
+AGENTS.md
+README.internal.md
+README.private.md
+temp/

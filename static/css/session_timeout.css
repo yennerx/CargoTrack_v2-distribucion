@@ -1,0 +1,30 @@
+.session-timeout-warning {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(15 23 42 / 55%);
+}
+
+.session-timeout-warning[hidden] {
+  display: none;
+}
+
+.session-timeout-card {
+  width: min(100%, 28rem);
+  padding: 1.5rem;
+  border-radius: 0.85rem;
+  background: #fff;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 20%);
+}
+
+.session-timeout-card h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.session-timeout-card p {
+  margin-bottom: 1.25rem;
+}

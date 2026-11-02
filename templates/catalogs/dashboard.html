@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-1">Sistema</p>
+      <h1 class="h3 mb-1">Configuración y catálogos</h1>
+      <p class="text-secondary mb-0">Valores controlados disponibles para los módulos del sistema.</p>
+    </div>
+    {% if user.is_staff %}
+      <a class="btn btn-outline-primary" href="{% url 'admin:catalogs_catalogentry_changelist' %}">
+        Administrar catálogos
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="row g-3 mb-4">
+    {% for group in catalog_groups %}
+      <div class="col-md-6 col-xl-4">
+        <article class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between gap-3 mb-3">
+              <h2 class="h6 mb-0">{{ group.label }}</h2>
+              <span class="badge text-bg-light">{{ group.active_count }} activos</span>
+            </div>
+            {% if group.entries %}
+              <ul class="list-unstyled small mb-0">
+                {% for entry in group.entries %}
+                  <li class="d-flex justify-content-between border-top py-2">
+                    <span>{{ entry.name }}</span>
+                    {% if not entry.is_active %}<span class="text-secondary">Inactivo</span>{% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="small text-secondary mb-0">Sin valores definidos todavía.</p>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+
+  <section class="card border-0 shadow-sm" aria-labelledby="configuration-title">
+    <div class="card-body">
+      <h2 id="configuration-title" class="h6">Parámetros generales</h2>
+      {% for configuration in configurations %}
+        <div class="d-flex justify-content-between border-top py-2 small">
+          <span>{{ configuration.description|default:configuration.key }}</span>
+          <strong>{{ configuration.value }}</strong>
+        </div>
+      {% empty %}
+        <p class="small text-secondary mb-0">Sin parámetros activos.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

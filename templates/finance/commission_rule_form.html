@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Regla de comisión | CargoTrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4"><div><p class="eyebrow mb-1">Comisiones</p><h1 class="h3">{% if rule %}Editar{% else %}Nueva{% endif %} regla</h1></div><a class="btn btn-outline-secondary" href="{% url 'finance:commission-rules' %}">Volver</a></div>
+<div class="card border-0 shadow-sm"><div class="card-body"><form method="post">{% csrf_token %}{{ form.as_p }}{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}<button class="btn btn-primary" type="submit">Guardar regla</button></form></div></div>
+{% endblock %}

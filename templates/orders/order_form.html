@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="mb-4"><p class="eyebrow mb-1">Operación</p><h1 class="h3">{{ title }}</h1></div>
+  <form method="post" class="card border-0 shadow-sm"><div class="card-body">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="row g-3">
+      {% for field in form %}
+        <div class="col-12 {% if field.name in 'rate_conditions logistics_notes' %}col-lg-6{% elif field.name in 'origin destination' %}col-md-6{% else %}col-lg-4{% endif %}">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+          {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div><div class="card-footer bg-white d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-secondary" href="{% if order %}{% url 'orders:detail' order.pk %}{% else %}{% url 'orders:list' %}{% endif %}">Cancelar</a>
+  </div></form>
+{% endblock %}

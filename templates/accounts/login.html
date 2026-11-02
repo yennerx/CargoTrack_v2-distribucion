@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-sm-10 col-md-7 col-lg-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h3 mb-2">Iniciar sesión</h1>
+          <p class="text-secondary mb-4">Accede al sistema de despacho.</p>
+          {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+              El usuario o la contraseña no son válidos.
+            </div>
+          {% endif %}
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label" for="id_username">Usuario</label>
+              <input class="form-control" type="text" name="username" id="id_username" required autofocus>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="id_password">Contraseña</label>
+              <input class="form-control" type="password" name="password" id="id_password" required>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+          </form>
+          <a class="d-block mt-3 text-center" href="{% url 'accounts:password_reset' %}">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

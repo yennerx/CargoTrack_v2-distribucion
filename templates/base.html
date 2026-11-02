@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CargoTrack, seguimiento de órdenes de despacho">
+    <title>{% block title %}CargoTrack{% endblock %}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% if user.is_authenticated %}<link rel="stylesheet" href="{% static 'css/session_timeout.css' %}">{% endif %}
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="bg-light{% if user.is_authenticated %} authenticated{% endif %}"{% if user.is_authenticated %} data-session-timeout-seconds="{{ session_idle_timeout_seconds }}" data-session-deadline-ms="{{ session_idle_deadline_ms }}" data-session-activity-url="{% url 'accounts:activity' %}" data-session-login-url="{% url 'accounts:login' %}"{% endif %}>
+    <nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm">
+      <div class="container-fluid px-3 px-lg-4">
+        <button
+          class="navbar-toggler d-lg-none me-2"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#app-navigation"
+          aria-controls="app-navigation"
+          aria-expanded="false"
+          aria-label="Mostrar navegación"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        {% if user.is_authenticated %}
+          <button
+            class="btn btn-sm btn-outline-light d-none d-lg-inline-flex align-items-center justify-content-center me-2 sidebar-toggle"
+            type="button"
+            id="sidebar-toggle"
+            aria-controls="app-navigation"
+            aria-expanded="true"
+            aria-label="Minimizar navegación"
+            title="Minimizar navegación"
+          >
+            <span class="sidebar-toggle-icon" aria-hidden="true">☰</span>
+          </button>
+        {% endif %}
+        <a class="navbar-brand fw-semibold" href="{% url 'core:home' %}">
+          <span class="brand-mark">CT</span>
+          CargoTrack
+        </a>
+        <span class="navbar-text text-white-50 d-none d-md-inline">Órdenes de despacho</span>
+        {% if user.is_authenticated %}
+          <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="user-chip d-none d-sm-inline">{{ user.get_username }}</span>
+            <a class="link-light small" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a>
+            <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-light" type="submit">Cerrar sesión</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    </nav>
+
+    {% if user.is_authenticated %}{% include "includes/session_timeout.html" %}{% endif %}
+
+    <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="icon-home" viewBox="0 0 16 16"><path d="m8 .8 7 6.1-.9 1L13 7v7H9.5v-4h-3v4H3V7l-1.1.9-.9-1L8 .8Z"/></symbol>
+      <symbol id="icon-clientes" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.5 6a5.5 5.5 0 0 1 11 0H2.5ZM12 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"/></symbol>
+      <symbol id="icon-transportistas" viewBox="0 0 16 16"><path d="M1 3h9v7h1.5l1.2-3H15l1 2v4h-1.2a1.8 1.8 0 0 1-3.6 0H6.8a1.8 1.8 0 0 1-3.6 0H1V3Zm10 2v3h3l-.8-3H11ZM5 14a.8.8 0 1 0 0-1.6A.8.8 0 0 0 5 14Zm8 0a.8.8 0 1 0 0-1.6.8.8 0 0 0 0 1.6Z"/></symbol>
+      <symbol id="icon-configuracion" viewBox="0 0 16 16"><path d="M6.6 1h2.8l.4 1.7 1.2.7 1.7-.5 1.4 2.4-1.3 1.2v1.4l1.3 1.2-1.4 2.4-1.7-.5-1.2.7-.4 1.7H6.6l-.4-1.7-1.2-.7-1.7.5-1.4-2.4 1.3-1.2V6.5L1.9 5.3l1.4-2.4 1.7.5 1.2-.7L6.6 1ZM8 10.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"/></symbol>
+      <symbol id="icon-ordenes" viewBox="0 0 16 16"><path d="M3 1h10v14H3V1Zm2 3v1h6V4H5Zm0 3v1h6V7H5Zm0 3v1h4v-1H5Z"/></symbol>
+      <symbol id="icon-incidencias" viewBox="0 0 16 16"><path d="M8 1 15.5 14h-15L8 1Zm-.7 4v4h1.4V5H7.3Zm0 5.2v1.5h1.4v-1.5H7.3Z"/></symbol>
+      <symbol id="icon-finanzas" viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm.6 3v1c1 .1 1.7.5 2.1 1.1l-1.2.8a1.8 1.8 0 0 0-1.6-.7c-.8 0-1.2.3-1.2.8 0 .4.4.6 1.5.9 1.6.4 2.6.9 2.6 2.2 0 1.2-.9 2-2.2 2.2v1H7.4v-1c-1.2-.1-2.1-.7-2.5-1.5l1.2-.8c.4.7 1.1 1 2 1 .9 0 1.4-.3 1.4-.9 0-.5-.5-.7-1.6-1C6.4 8.8 5.3 8.3 5.3 7c0-1.1.8-1.9 2.1-2V4h1.2Z"/></symbol>
+      <symbol id="icon-comisiones" viewBox="0 0 16 16"><path d="M2 2h12v12H2V2Zm2 8 2.3-2.3 1.8 1.8L12 5.5l1 1-4.9 4.9-1.8-1.8L5 11l-1-1Z"/></symbol>
+      <symbol id="icon-reportes" viewBox="0 0 16 16"><path d="M2 2h12v12H2V2Zm2 7v3h2V9H4Zm3-3v6h2V6H7Zm3 2v4h2V8h-2Z"/></symbol>
+      <symbol id="icon-auditoria" viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 7 7 7 7 0 0 0-7-7Zm.7 3v3.7l2.5 1.5-.7 1.1-3.1-1.9V4h1.3Z"/></symbol>
+      <symbol id="icon-admin" viewBox="0 0 16 16"><path d="M8 1 2 3v4c0 3.6 2.5 6.7 6 8 3.5-1.3 6-4.4 6-8V3L8 1Zm0 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm-3 7a3 3 0 0 1 6 0H5Z"/></symbol>
+    </svg>
+    <div class="app-shell{% if user.is_authenticated %} has-sidebar{% if sidebar_collapsed %} sidebar-collapsed{% endif %}{% endif %}" id="app-shell"{% if user.is_authenticated %} data-preference-url="{% url 'core:save-navigation-preference' %}"{% endif %}>
+      {% if user.is_authenticated %}
+        <div class="app-navigation-shell collapse d-lg-block" id="app-navigation">
+        <aside class="app-sidebar" aria-label="Navegación principal">
+          <div class="sidebar-inner">
+            <p class="sidebar-kicker">Navegación</p>
+            {% for section in navigation_sections %}
+              <div class="sidebar-section">
+                <button
+                  class="sidebar-section-toggle {% if section.collapsed %}collapsed{% endif %}"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#sidebar-section-{{ section.slug }}"
+                  aria-controls="sidebar-section-{{ section.slug }}"
+                  aria-expanded="{% if section.collapsed %}false{% else %}true{% endif %}"
+                >
+                  <span>{{ section.name }}</span>
+                  <span class="section-chevron" aria-hidden="true"></span>
+                </button>
+                <div
+                  class="collapse {% if not section.collapsed %}show{% endif %}"
+                  id="sidebar-section-{{ section.slug }}"
+                  data-navigation-section="{{ section.slug }}"
+                >
+                  <nav class="nav flex-column sidebar-links">
+                    {% for item in section.items %}
+                      <a class="app-nav-link {% if item.active %}active{% endif %}" href="{{ item.url }}">
+                        <svg class="nav-icon" aria-hidden="true"><use href="#icon-{{ item.icon }}"></use></svg>
+                        <span>{{ item.label }}</span>
+                        {% if item.status == "Próximamente" %}<span class="coming-soon">Pronto</span>{% endif %}
+                      </a>
+                    {% endfor %}
+                  </nav>
+                </div>
+              </div>
+            {% endfor %}
+            <button class="btn btn-sm btn-link sidebar-reset" type="button" id="sidebar-reset">Restablecer navegación</button>
+          </div>
+        </aside>
+        </div>
+      {% endif %}
+
+      <main class="container-fluid app-main px-3 px-lg-4 py-4" id="main-content">
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="app-footer border-top bg-white py-3">
+        <div class="container small text-secondary">
+          © 2026 CargoTrack. Todos los derechos reservados.
+        </div>
+      </footer>
+    </div>
+
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    {% if user.is_authenticated %}<script src="{% static 'js/session_timeout.js' %}" defer></script>{% endif %}
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

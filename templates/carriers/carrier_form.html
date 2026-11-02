@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="mb-4"><p class="eyebrow mb-1">Transportistas</p><h1 class="h3 mb-1">{{ title }}</h1><p class="text-secondary mb-0">Los documentos serán revisados por el Dispatcher antes de validar.</p></div>
+  <form method="post" novalidate>{% csrf_token %}{{ form.non_field_errors }}
+    <section class="card border-0 shadow-sm mb-3"><div class="card-body"><h2 class="h6">Datos generales</h2><div class="row g-3">
+      {% for field in form %}<div class="{% if field.name == 'notes' or field.name == 'address' %}col-12{% else %}col-md-6{% endif %}"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger"> *</span>{% endif %}</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>{% endfor %}
+    </div></div></section>
+    <section class="card border-0 shadow-sm mb-3"><div class="card-body"><h2 class="h6">Unidades o equipos</h2>{{ unit_formset.management_form }}{{ unit_formset.non_form_errors }}{% for item in unit_formset %}<div class="border-top pt-3 mt-3">{{ item.id }}<div class="row g-3">{% for field in item.visible_fields %}<div class="{% if field.name == 'equipment_type' %}col-md-4{% elif field.name == 'is_active' %}col-md-2{% else %}col-md-3{% endif %}"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger"> *</span>{% endif %}</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>{% endfor %}</div></div>{% endfor %}</div></section>
+    <section class="card border-0 shadow-sm mb-3"><div class="card-body"><h2 class="h6">Documentos y vigencias</h2>{{ document_formset.management_form }}{{ document_formset.non_form_errors }}{% for item in document_formset %}<div class="border-top pt-3 mt-3">{{ item.id }}<div class="row g-3">{% for field in item.visible_fields %}<div class="{% if field.name == 'document_type' or field.name == 'document_number' %}col-md-3{% elif field.name == 'notes' %}col-md-6{% elif field.name == 'is_active' %}col-md-2{% else %}col-md-2{% endif %}"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger"> *</span>{% endif %}</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>{% endfor %}</div></div>{% endfor %}</div></section>
+    <button class="btn btn-primary" type="submit">Guardar transportista</button> <a class="btn btn-outline-secondary" href="{% if carrier %}{% url 'carriers:detail' carrier.pk %}{% else %}{% url 'carriers:list' %}{% endif %}">Cancelar</a>
+  </form>
+{% endblock %}

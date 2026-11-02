@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Transportistas | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-1">Operación</p>
+      <h1 class="h3 mb-1">Transportistas</h1>
+      <p class="text-secondary mb-0">Personas y empresas con unidades y documentación vigente.</p>
+    </div>
+    {% if perms.carriers.add_carrier %}<a class="btn btn-primary ms-auto" href="{% url 'carriers:create' %}">Nuevo transportista</a>{% endif %}
+  </div>
+
+  <form class="card card-body border-0 shadow-sm mb-4" method="get">
+    <div class="row g-2 align-items-end">
+      <div class="col-12 col-md-8">
+        <label class="form-label" for="id_q">Buscar</label>
+        <input class="form-control" id="id_q" name="q" value="{{ query }}" placeholder="NIT, nombre legal o comercial">
+      </div>
+      <div class="col-12 col-md-2 form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="inactivos" value="1" id="id_inactivos" {% if request.GET.inactivos == "1" %}checked{% endif %}>
+        <label class="form-check-label" for="id_inactivos">Incluir inactivos</label>
+      </div>
+      <div class="col-12 col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Buscar</button></div>
+    </div>
+  </form>
+
+  <div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table align-middle mb-0">
+    <thead><tr><th>Transportista</th><th>NIT</th><th>Tipo</th><th>Validación</th><th>Última modificación</th><th></th></tr></thead>
+    <tbody>
+      {% for carrier in carriers %}
+        <tr>
+          <td><a href="{% url 'carriers:detail' carrier.pk %}">{{ carrier.legal_name }}</a>{% if not carrier.is_active %} <span class="badge text-bg-secondary">Inactivo</span>{% endif %}{% if carrier.commercial_name %}<div class="small text-secondary">{{ carrier.commercial_name }}</div>{% endif %}</td>
+          <td><code>{{ carrier.nit }}</code></td>
+          <td>{{ carrier.get_carrier_type_display }}</td>
+          <td>{% if carrier.is_validated %}<span class="badge text-bg-success">Validado</span>{% else %}<span class="badge text-bg-warning">Pendiente</span>{% endif %}</td>
+          <td>{{ carrier.updated_at|date:"d/m/Y H:i" }}</td>
+          <td><a class="btn btn-sm btn-outline-secondary" href="{% url 'carriers:detail' carrier.pk %}">Ver</a></td>
+        </tr>
+      {% empty %}<tr><td colspan="6" class="text-center text-secondary py-4">No hay transportistas para mostrar.</td></tr>{% endfor %}
+    </tbody>
+  </table></div></div>
+{% endblock %}

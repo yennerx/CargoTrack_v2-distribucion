@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Reglas de comisión | CargoTrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4"><div><p class="eyebrow mb-1">Comisiones</p><h1 class="h3">Porcentajes por broker</h1></div>{% if perms.finance.add_commissionrule %}<a class="btn btn-primary" href="{% url 'finance:commission-rule-create' %}">Nueva regla</a>{% endif %}</div>
+<div class="card border-0 shadow-sm"><div class="card-body"><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Broker</th><th>Porcentaje</th><th>Desde</th><th>Hasta</th><th>Activa</th><th></th></tr></thead><tbody>{% for rule in rules %}<tr><td>{{ rule.broker }}</td><td>{{ rule.percentage }}%</td><td>{{ rule.valid_from|date:"d/m/Y" }}</td><td>{{ rule.valid_to|date:"d/m/Y"|default:"Abierta" }}</td><td>{{ rule.is_active|yesno:"Sí,No" }}</td><td>{% if perms.finance.change_commissionrule %}<a href="{% url 'finance:commission-rule-edit' rule.pk %}">Editar</a>{% endif %}</td></tr>{% empty %}<tr><td colspan="6">Sin reglas configuradas.</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% endblock %}

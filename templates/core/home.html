@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Panel de control | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-1">Panel de control</p>
+      <h1 class="h3 mb-1">Resumen de CargoTrack</h1>
+      <p class="text-secondary mb-0">Indicadores y accesos de acuerdo con tus permisos.</p>
+    </div>
+    {% if dashboard_widgets %}
+      <details class="dashboard-settings card border-0 shadow-sm">
+        <summary class="card-body py-2 px-3">Configurar panel</summary>
+        <div class="card-body pt-0">
+          <p class="small text-secondary">Selecciona los indicadores y cambia su orden.</p>
+          <form id="dashboard-preferences-form" data-preference-url="{{ dashboard_preference_url }}">
+            {% csrf_token %}
+            <ol class="list-group list-group-numbered mb-3" id="dashboard-widget-order">
+              {% for widget in dashboard_widgets %}
+                <li class="list-group-item d-flex align-items-center gap-2" data-widget-id="{{ widget.id }}">
+                  <label class="form-check-label flex-grow-1" for="widget-visible-{{ widget.id }}">{{ widget.title }}</label>
+                  <input
+                    class="form-check-input dashboard-widget-visibility"
+                    type="checkbox"
+                    id="widget-visible-{{ widget.id }}"
+                    value="{{ widget.id }}"
+                    {% if widget.visible %}checked{% endif %}
+                  >
+                  <button class="btn btn-sm btn-outline-secondary dashboard-move-widget" type="button" data-direction="up" aria-label="Mover {{ widget.title }} hacia arriba">↑</button>
+                  <button class="btn btn-sm btn-outline-secondary dashboard-move-widget" type="button" data-direction="down" aria-label="Mover {{ widget.title }} hacia abajo">↓</button>
+                </li>
+              {% endfor %}
+            </ol>
+            <button class="btn btn-primary btn-sm" type="submit">Guardar preferencias</button>
+            <span class="small ms-2" id="dashboard-preference-status" role="status" aria-live="polite"></span>
+          </form>
+        </div>
+      </details>
+    {% endif %}
+  </div>
+
+  {% if dashboard_widgets %}
+    <section aria-labelledby="dashboard-indicators-title" class="mb-5">
+        <h2 class="visually-hidden" id="dashboard-indicators-title">Indicadores</h2>
+        <div class="row g-3" id="dashboard-widgets">
+          {% for widget in dashboard_widgets %}
+            <div class="col-sm-6 col-xl-3" data-widget-id="{{ widget.id }}"{% if not widget.visible %} hidden{% endif %}>
+              <a class="card border-0 shadow-sm h-100 text-decoration-none text-reset dashboard-widget" href="{{ widget.url }}">
+                <div class="card-body">
+                  <span class="text-secondary">{{ widget.title }}</span>
+                  <span class="d-block h3 mt-2 mb-0">
+                    {% if widget.value is None %}—{% elif widget.format == "currency" %}{{ widget.value|floatformat:2 }}{% else %}{{ widget.value }}{% endif %}
+                  </span>
+                  <span class="small text-primary">Ver detalle →</span>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+      </div>
+      {% if not dashboard_metrics_available %}
+        <p class="small text-secondary mt-2">Los indicadores se muestran cuando tu rol tiene acceso a los reportes correspondientes.</p>
+      {% endif %}
+    </section>
+  {% else %}
+    <div class="alert alert-info">No hay indicadores disponibles para los permisos asignados a tu cuenta.</div>
+  {% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{% static 'js/dashboard.js' %}" defer></script>
+{% endblock %}

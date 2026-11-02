@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ order.number }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div><p class="eyebrow mb-1">Orden de despacho</p><h1 class="h3 mb-1"><code>{{ order.number }}</code></h1><span class="badge text-bg-light">Operación: {{ order.status.name }}</span><span class="badge text-bg-secondary">Cierre: {{ order.get_closure_status_display }}</span>{% if is_overdue %}<span class="badge text-bg-danger">Atrasada</span>{% endif %}</div>
+     <div class="d-flex gap-2">
+       {% if perms.orders.change_order and order.closure_status != "closed" %}<a class="btn btn-outline-primary" href="{% url 'orders:update' order.pk %}">Editar</a>{% endif %}
+       {% if perms.audit.view_auditevent and perms.orders.view_order %}<a class="btn btn-outline-secondary" href="{% url 'audit:order_history' order.pk %}">Auditoría</a>{% endif %}
+       {% if perms.incidents.add_incident %}<a class="btn btn-outline-danger" href="{% url 'incidents:create' order.pk %}">Nueva incidencia</a>{% endif %}
+       {% if perms.finance.view_financialtransaction %}<a class="btn btn-outline-success" href="{% url 'finance:order' order.pk %}">Finanzas</a>{% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'orders:list' %}">Volver</a>
+    </div>
+  </div>
+  {% if messages %}{% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>{% endfor %}{% endif %}
+  {% if closing_document_errors %}<div class="alert alert-warning"><strong>Requisitos documentales de cierre:</strong><ul class="mb-0">{% for error in closing_document_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+  <div class="row g-4">
+    <div class="col-12 col-lg-7"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+      <h2 class="h5">Datos operativos</h2>
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Cliente</dt><dd class="col-sm-8">{{ order.customer.legal_name }} ({{ order.customer.nit }})</dd>
+        <dt class="col-sm-4">Transportista propuesto</dt><dd class="col-sm-8">{{ order.proposed_carrier|default:"Pendiente" }}</dd>
+        <dt class="col-sm-4">Transportista confirmado</dt><dd class="col-sm-8">{{ order.confirmed_carrier|default:"Pendiente" }}</dd>
+        <dt class="col-sm-4">Broker</dt><dd class="col-sm-8">{{ order.broker.get_username }}</dd>
+        <dt class="col-sm-4">Dispatcher</dt><dd class="col-sm-8">{{ order.dispatcher.get_username|default:"Pendiente" }}</dd>
+        <dt class="col-sm-4">Carga / equipo</dt><dd class="col-sm-8">{{ order.cargo_type.name }} / {{ order.equipment_type.name }}</dd>
+        <dt class="col-sm-4">Ruta</dt><dd class="col-sm-8">{{ order.origin }} → {{ order.destination }}</dd>
+        <dt class="col-sm-4">Fechas</dt><dd class="col-sm-8">{{ order.pickup_date|date:"d/m/Y" }} al {{ order.delivery_date|date:"d/m/Y" }}</dd>
+      </dl>
+    </div></div></div>
+    <div class="col-12 col-lg-5"><div class="card border-0 shadow-sm mb-4"><div class="card-body">
+      <h2 class="h5">Tarifa</h2>
+      <dl class="row mb-0"><dt class="col-7">Cliente</dt><dd class="col-5 text-end">USD {{ order.customer_rate|floatformat:2 }}</dd><dt class="col-7">Transportista</dt><dd class="col-5 text-end">USD {{ order.carrier_cost|floatformat:2 }}</dd></dl>
+      {% if order.rate_conditions %}<hr><p class="small mb-0">{{ order.rate_conditions }}</p>{% endif %}
+    </div></div>
+    {% if perms.orders.change_order and order.proposed_carrier and not order.confirmed_carrier %}<form method="post" action="{% url 'orders:confirm_carrier' order.pk %}" class="card border-0 shadow-sm"><div class="card-body"><h2 class="h5">Formalización</h2><p class="small text-secondary">El transportista debe estar activo y validado.</p>{% csrf_token %}<button class="btn btn-primary" type="submit">Confirmar transportista</button></div></form>{% endif %}
+    {% if perms.orders.change_order and status_form.fields.status.queryset %}<form method="post" action="{% url 'orders:change_status' order.pk %}" class="card border-0 shadow-sm mt-4"><div class="card-body"><h2 class="h5">Cambiar estado</h2>{% csrf_token %}<div class="mb-3">{{ status_form.status.label_tag }}{{ status_form.status }}</div><div class="mb-3">{{ status_form.observation.label_tag }}{{ status_form.observation }}</div><button class="btn btn-primary" type="submit">Actualizar estado</button></div></form>{% endif %}
+    </div>
+  </div>
+  <div class="card border-0 shadow-sm mt-4"><div class="card-body"><h2 class="h5">Historial de estados</h2><div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>Fecha</th><th>Estado</th><th>Anterior</th><th>Usuario</th><th>Observación</th></tr></thead><tbody>{% for item in status_history %}<tr><td>{{ item.changed_at|date:"d/m/Y H:i" }}</td><td>{{ item.status.name }}</td><td>{{ item.previous_status.name|default:"Inicio" }}</td><td>{{ item.changed_by.get_username }}</td><td>{{ item.observation|default:"-" }}</td></tr>{% empty %}<tr><td colspan="5" class="text-secondary">Sin historial.</td></tr>{% endfor %}</tbody></table></div></div></div>
+  <section class="card border-0 shadow-sm mt-4"><div class="card-body"><h2 class="h5">Documentos del expediente</h2><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Tipo</th><th>Etapa</th><th>Acción</th></tr></thead><tbody>{% for document in documents %}<tr><td>{{ document.document_type.name }}</td><td>{{ document.stage.name|default:"-" }}</td><td><a href="{% url 'documents:detail' document.pk %}" class="btn btn-sm btn-outline-secondary">Gestionar</a></td></tr>{% empty %}<tr><td colspan="3" class="text-secondary">Sin documentos cargados.</td></tr>{% endfor %}</tbody></table></div>{% if perms.documents.add_document %}<form method="post" enctype="multipart/form-data" action="{% url 'documents:order_upload' order.pk %}" class="border-top pt-3 mt-3"><div class="row g-2"><div class="col-md-3">{{ document_form.document_type.label_tag }}{{ document_form.document_type }}</div><div class="col-md-3">{{ document_form.stage.label_tag }}{{ document_form.stage }}</div><div class="col-md-3">{{ document_form.related_event.label_tag }}{{ document_form.related_event }}</div><div class="col-md-3">{{ document_form.file.label_tag }}{{ document_form.file }}</div></div><button class="btn btn-primary btn-sm mt-3" type="submit">Cargar documento</button>{% csrf_token %}</form>{% endif %}</div></section>
+ {% endblock %}

@@ -1,0 +1,41 @@
+services:
+  web:
+    build: .
+    env_file:
+      - ${COMPOSE_ENV_FILE:-.env}
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "config.wsgi:application"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/Adjuntos:/app/Adjuntos
+      - staticfiles:/app/staticfiles
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - ${COMPOSE_ENV_FILE:-.env}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  staticfiles:

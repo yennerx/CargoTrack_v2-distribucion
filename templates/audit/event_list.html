@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{% if order %}Historial de {{ order.number }}{% else %}Auditoría{% endif %} | CargoTrack{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <p class="eyebrow mb-1">Sistema</p>
+  <h1 class="h3">{% if order %}Historial de auditoría: {{ order.number }}{% else %}Auditoría{% endif %}</h1>
+  <p class="text-secondary mb-0">Trazabilidad de acciones críticas del sistema.</p>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label" for="id_action">Acción</label>
+        {{ filter_form.action }}{{ filter_form.action.errors }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="id_entity_type">Entidad</label>
+        {{ filter_form.entity_type }}{{ filter_form.entity_type.errors }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="id_actor">Usuario</label>
+        {{ filter_form.actor }}{{ filter_form.actor.errors }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="id_date_from">Desde</label>
+        {{ filter_form.date_from }}{{ filter_form.date_from.errors }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="id_date_to">Hasta</label>
+        {{ filter_form.date_to }}{{ filter_form.date_to.errors }}
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">Filtrar</button>
+        <a class="btn btn-outline-secondary" href="{{ list_url }}">Limpiar</a>
+        {% if order %}<a class="btn btn-outline-secondary" href="{% url 'audit:list' %}">Ver auditoría general</a>{% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+{% if filter_form.errors %}
+  <div class="alert alert-danger" role="alert">Revise los filtros; no se consultó la auditoría.</div>
+{% endif %}
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead><tr><th>Fecha</th><th>Usuario</th><th>Orden</th><th>Acción</th><th>Entidad</th><th>Identificador</th><th>Metadatos</th></tr></thead>
+      <tbody>
+        {% for event in page %}
+          <tr>
+            <td>{{ event.created_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ event.actor|default:"Sistema" }}</td>
+            <td>{% if event.order and can_view_orders %}<a href="{% url 'audit:order_history' event.order_id %}">{{ event.order.number }}</a>{% else %}-{% endif %}</td>
+            <td>{{ event.action }}</td>
+            <td>{{ event.entity_type }}</td>
+            <td>{{ event.entity_id|default:"-" }}</td>
+            <td><small>{{ event.metadata }}</small></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="p-3">No hay eventos de auditoría para los filtros seleccionados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page.has_other_pages %}
+    <div class="card-footer bg-white">
+      <nav aria-label="Paginación de auditoría">
+        <ul class="pagination pagination-sm mb-0">
+          {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page.previous_page_number }}">Anterior</a></li>{% endif %}
+          <li class="page-item active"><span class="page-link">{{ page.number }} de {{ page.paginator.num_pages }}</span></li>
+          {% if page.has_next %}<li class="page-item"><a class="page-link" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page.next_page_number }}">Siguiente</a></li>{% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

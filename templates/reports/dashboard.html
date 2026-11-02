@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Reportes | CargoTrack{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <p class="eyebrow mb-1">Supervisión</p>
+  <h1 class="h3">Reportes e indicadores</h1>
+  <p class="text-secondary mb-0">Resumen general y accesos rápidos. Aplica filtros dentro de cada reporte.</p>
+</div>
+
+{% if metrics %}
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Órdenes activas</span><h2 class="h4">{{ metrics.active_orders }}</h2></div></div></div>
+    <div class="col-md-3"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Órdenes atrasadas</span><h2 class="h4">{{ metrics.overdue_orders }}</h2></div></div></div>
+    {% if financial_access %}
+      <div class="col-md-3"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Cobros pendientes</span><h2 class="h4">{{ metrics.pending_collections }}</h2></div></div></div>
+      <div class="col-md-3"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Utilidad USD</span><h2 class="h4">{{ metrics.profit_usd|floatformat:2 }}</h2></div></div></div>
+    {% endif %}
+  </div>
+{% endif %}
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <h2 class="h5">Accesos rápidos del reporte de órdenes</h2>
+    <div class="d-flex flex-wrap gap-2">
+      {% for shortcut in quick_access %}
+        <a class="btn btn-outline-primary btn-sm" href="{{ shortcut.url }}">{{ shortcut.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% if administrative_reports %}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h2 class="h5">Reportes administrativos</h2>
+      <div class="list-group list-group-flush">
+        {% for code, label in administrative_reports %}
+          <a class="list-group-item list-group-item-action" href="{% url 'reports:detail' code %}">{{ label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <h2 class="h5">Reportes disponibles</h2>
+    <div class="list-group list-group-flush">
+      {% for code, label in report_choices %}
+        {% if financial_access or code not in financial_reports %}
+          <a class="list-group-item list-group-item-action" href="{% url 'reports:detail' code %}">{{ label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

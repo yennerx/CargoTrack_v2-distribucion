@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="mb-4">
+    <p class="eyebrow mb-1">Clientes</p>
+    <h1 class="h3 mb-1">{{ title }}</h1>
+    <p class="text-secondary mb-0">Los campos marcados con <span class="text-danger">*</span> son obligatorios.</p>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <section class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h6">Datos generales</h2>
+        <div class="row g-3">
+          {% for field in form %}
+            <div class="{% if field.name == 'notes' or field.name == 'address' %}col-12{% else %}col-md-6{% endif %}">
+              <label class="form-label" for="{{ field.id_for_label }}">
+                {{ field.label }}{% if field.field.required %}<span class="text-danger" aria-hidden="true"> *</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+              {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h6">Contactos</h2>
+        <p class="small text-secondary">El primer contacto se marca como principal automáticamente. Debe existir exactamente un contacto principal activo.</p>
+        {{ formset.management_form }}
+        {{ formset.non_form_errors }}
+        <div id="contact-forms">
+          {% for contact_form in formset %}
+            <div class="contact-form border-top pt-3 mt-3">
+              {{ contact_form.id }}
+              <div class="row g-3">
+                {% for field in contact_form.visible_fields %}
+                  <div class="{% if field.name == 'name' or field.name == 'email' %}col-md-4{% elif field.name == 'is_primary' or field.name == 'is_active' %}col-md-2{% else %}col-md-3{% endif %}">
+                    {% if field.name == 'is_primary' or field.name == 'is_active' %}
+                      <div class="form-check mt-md-4">
+                        {{ field }}
+                        <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger" aria-hidden="true"> *</span>{% endif %}</label>
+                      </div>
+                    {% else %}
+                      <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger" aria-hidden="true"> *</span>{% endif %}</label>
+                      {{ field }}
+                    {% endif %}
+                    {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <button class="btn btn-outline-primary mt-3" type="button" id="add-contact">Agregar contacto</button>
+        <template id="empty-contact-form">
+          <div class="row g-3">
+            {% for field in formset.empty_form.visible_fields %}
+              <div class="{% if field.name == 'name' or field.name == 'email' %}col-md-4{% elif field.name == 'is_primary' or field.name == 'is_active' %}col-md-2{% else %}col-md-3{% endif %}">
+                {% if field.name == 'is_primary' or field.name == 'is_active' %}
+                  <div class="form-check mt-md-4">
+                    {{ field }}
+                    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger" aria-hidden="true"> *</span>{% endif %}</label>
+                  </div>
+                {% else %}
+                  <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger" aria-hidden="true"> *</span>{% endif %}</label>
+                  {{ field }}
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </template>
+      </div>
+    </section>
+    <button class="btn btn-primary" type="submit">Guardar cliente</button>
+    <a class="btn btn-outline-secondary" href="{% if customer %}{% url 'customers:detail' customer.pk %}{% else %}{% url 'customers:list' %}{% endif %}">Cancelar</a>
+  </form>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{% static 'js/customers.js' %}"></script>
+{% endblock %}

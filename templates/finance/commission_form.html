@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Calcular comisión | CargoTrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4"><div><p class="eyebrow mb-1">Comisiones</p><h1 class="h3">Calcular {{ order.number }}</h1></div><a class="btn btn-outline-secondary" href="{% url 'finance:order' order.pk %}">Volver a finanzas</a></div>
+<div class="card border-0 shadow-sm"><div class="card-body"><p>La utilidad se toma del resumen financiero validado. El descuento corresponde al saldo no pagado por el cliente.</p><form method="post">{% csrf_token %}{{ form.as_p }}{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}<button class="btn btn-primary" type="submit">Calcular comisión</button></form></div></div>
+{% endblock %}

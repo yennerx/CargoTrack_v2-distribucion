@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="mb-4"><p class="eyebrow mb-1">Incidencia de {{ order.number }}</p><h1 class="h3">{{ title }}</h1></div>
+  <form method="post" class="card border-0 shadow-sm"><div class="card-body">{% csrf_token %}{% for field in form %}<div class="mb-3">{{ field.label_tag }}{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}<button class="btn btn-primary" type="submit">Guardar incidencia</button> <a class="btn btn-outline-secondary" href="{% url 'orders:detail' order.pk %}">Cancelar</a></div></form>
+{% endblock %}

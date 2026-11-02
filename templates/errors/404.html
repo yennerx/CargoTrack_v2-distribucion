@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Página no encontrada | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="error-panel text-center">
+    <p class="display-3 fw-bold text-primary mb-2">404</p>
+    <h1 class="h3">Página no encontrada</h1>
+    <p class="text-secondary">La dirección solicitada no existe.</p>
+    <a class="btn btn-primary" href="{% url 'core:home' %}">Volver al inicio</a>
+  </div>
+{% endblock %}

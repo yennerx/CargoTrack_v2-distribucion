@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ customer.legal_name }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-1">Cliente</p>
+      <h1 class="h3 mb-1">{{ customer.legal_name }}</h1>
+      <p class="text-secondary mb-0">NIT: <code>{{ customer.nit }}</code></p>
+    </div>
+    <div class="d-flex gap-2">
+      {% if perms.customers.change_customer %}<a class="btn btn-primary" href="{% url 'customers:update' customer.pk %}">Editar</a>{% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'customers:list' %}">Volver</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-lg-5">
+      <section class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h6">Datos generales</h2>
+          <dl class="row small mb-0">
+            <dt class="col-sm-5">Nombre comercial</dt><dd class="col-sm-7">{{ customer.commercial_name|default:"No registrado" }}</dd>
+            <dt class="col-sm-5">Dirección</dt><dd class="col-sm-7">{{ customer.address|default:"No registrada" }}</dd>
+            <dt class="col-sm-5">Ubicación</dt><dd class="col-sm-7">{{ customer.city }}{% if customer.country %}, {{ customer.country }}{% endif %}</dd>
+            <dt class="col-sm-5">Última modificación</dt><dd class="col-sm-7">{{ customer.updated_at|date:"d/m/Y H:i" }}</dd>
+          </dl>
+        </div>
+      </section>
+    </div>
+    <div class="col-lg-7">
+      <section class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h6">Contactos</h2>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Estado</th></tr></thead>
+              <tbody>
+                {% for contact in customer.contacts.all %}
+                  <tr>
+                    <td>{{ contact.name }}{% if contact.is_primary %} <span class="badge text-bg-primary">Principal</span>{% endif %}</td>
+                    <td>{{ contact.primary_phone }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{% if contact.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+                  </tr>
+                {% empty %}<tr><td colspan="4" class="text-secondary">Sin contactos.</td></tr>{% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  {% if can_view_order_history %}
+    <section class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="h6">Historial de servicios</h2>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead><tr><th>Orden</th><th>Estado operativo</th><th>Estado de cierre</th><th>Transportista</th><th>Recogida</th><th>Entrega</th></tr></thead>
+            <tbody>
+              {% for order in orders %}
+                <tr>
+                  <td><a href="{% url 'orders:detail' order.pk %}">{{ order.number }}</a></td>
+                  <td>{{ order.status.name }}</td>
+                  <td>{{ order.get_closure_status_display }}</td>
+                  <td>{{ order.confirmed_carrier|default:"Pendiente" }}</td>
+                  <td>{{ order.pickup_date|date:"d/m/Y" }}</td>
+                  <td>{{ order.delivery_date|date:"d/m/Y" }}</td>
+                </tr>
+              {% empty %}<tr><td colspan="6" class="text-secondary">Sin servicios registrados.</td></tr>{% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if orders.has_other_pages %}<nav class="mt-3" aria-label="Paginación del historial de servicios"><ul class="pagination pagination-sm mb-0">
+          {% if orders.has_previous %}<li class="page-item"><a class="page-link" href="?orders_page={{ orders.previous_page_number }}">Anterior</a></li>{% endif %}
+          <li class="page-item active"><span class="page-link">{{ orders.number }} de {{ orders.paginator.num_pages }}</span></li>
+          {% if orders.has_next %}<li class="page-item"><a class="page-link" href="?orders_page={{ orders.next_page_number }}">Siguiente</a></li>{% endif %}
+        </ul></nav>{% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if can_view_collection_history %}
+    <section class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="h6">Historial de cobros</h2>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead><tr><th>Fecha</th><th>Orden</th><th>Monto</th><th>Estado</th><th>Referencia</th></tr></thead>
+            <tbody>
+              {% for collection in collections %}
+                <tr>
+                  <td>{{ collection.transaction_date|date:"d/m/Y" }}</td>
+                  <td><a href="{% url 'orders:detail' collection.order_id %}">{{ collection.order.number }}</a></td>
+                  <td>{{ collection.currency.code|upper }} {{ collection.amount|floatformat:2 }}</td>
+                  <td>{{ collection.get_status_display }}</td>
+                  <td>{{ collection.reference|default:"-" }}</td>
+                </tr>
+              {% empty %}<tr><td colspan="5" class="text-secondary">Sin cobros registrados.</td></tr>{% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if collections.has_other_pages %}<nav class="mt-3" aria-label="Paginación del historial de cobros"><ul class="pagination pagination-sm mb-0">
+          {% if collections.has_previous %}<li class="page-item"><a class="page-link" href="?collections_page={{ collections.previous_page_number }}">Anterior</a></li>{% endif %}
+          <li class="page-item active"><span class="page-link">{{ collections.number }} de {{ collections.paginator.num_pages }}</span></li>
+          {% if collections.has_next %}<li class="page-item"><a class="page-link" href="?collections_page={{ collections.next_page_number }}">Siguiente</a></li>{% endif %}
+        </ul></nav>{% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if perms.customers.change_customer and customer.is_active %}
+    <form method="post" action="{% url 'customers:deactivate' customer.pk %}">
+      {% csrf_token %}
+      <button class="btn btn-outline-danger" type="submit">Desactivar cliente</button>
+    </form>
+  {% endif %}
+{% endblock %}

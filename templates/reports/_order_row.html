@@ -1,0 +1,11 @@
+<tr>
+  <td>{{ row.number }}</td>
+  <td>{{ row.customer.legal_name }}</td>
+  <td>{{ row.broker }}</td>
+  <td>{{ row.confirmed_carrier|default:row.proposed_carrier|default:"Sin transportista" }}</td>
+  <td>{{ row.status.name }}</td>
+  <td>{{ row.get_closure_status_display }}</td>
+  <td>{{ row.cargo_type.name }}</td>
+  <td>{{ row.created_at|date:"d/m/Y" }}</td>
+  <td>{{ row.delivery_date|date:"d/m/Y" }}</td>
+</tr>

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}{{ report_title }} | CargoTrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+  <div><p class="eyebrow mb-1">Reportes</p><h1 class="h3">{{ report_title }}</h1></div>
+  <div class="d-flex gap-2">
+    {% if commission_detail_mode %}<a class="btn btn-outline-primary" href="{{ commission_summary_url }}">Resumen por broker</a>{% endif %}
+    <a class="btn btn-outline-secondary" href="{% url 'reports:dashboard' %}">Panel</a>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+      <input type="hidden" name="report" value="{{ report_type }}">
+      <div class="col-md-2">
+        <label class="form-label" for="id_date_from">Desde</label>
+        {{ form.date_from }}{{ form.date_from.errors }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="id_date_to">Hasta</label>
+        {{ form.date_to }}{{ form.date_to.errors }}
+      </div>
+      {% if report_type == "orders" %}
+        <div class="col-md-2"><label class="form-label" for="id_date_basis">Fecha de</label>{{ form.date_basis }}</div>
+      {% endif %}
+      <div class="col-md-2"><label class="form-label" for="id_customer">Cliente</label>{{ form.customer }}</div>
+      <div class="col-md-2"><label class="form-label" for="id_broker">Broker</label>{{ form.broker }}</div>
+      <div class="col-md-2"><label class="form-label" for="id_carrier">Transportista</label>{{ form.carrier }}</div>
+      <div class="col-md-2"><label class="form-label" for="id_status">Estado operativo</label>{{ form.status }}</div>
+      <div class="col-md-2"><label class="form-label" for="id_cargo_type">Tipo de carga</label>{{ form.cargo_type }}</div>
+      {% if report_type == "orders" %}
+        <div class="col-md-2"><label class="form-label" for="id_closure_status">Estado de cierre</label>{{ form.closure_status }}</div>
+        <div class="col-md-3"><label class="form-label" for="id_group_by">Agrupar por</label>{{ form.group_by }}</div>
+        <div class="col-md-3"><label class="form-label" for="id_overdue">Condición de atraso</label>{{ form.overdue }}</div>
+        <div class="col-md-2"><label class="form-label" for="id_financial_status">Estado financiero</label>{{ form.financial_status }}</div>
+      {% elif report_type == "commissions" %}
+        <div class="col-md-2"><label class="form-label" for="id_commission_status">Estado de comisión</label>{{ form.commission_status }}</div>
+      {% endif %}
+      <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+      {% if export_allowed and filters_valid %}
+        <div class="col-md-2"><a class="btn btn-outline-success w-100" href="?{{ export_querystring }}">Exportar CSV</a></div>
+      {% endif %}
+    </form>
+    {% if form.errors %}
+      <div class="alert alert-danger mt-3 mb-0" role="alert">
+        <strong>Filtros inválidos.</strong> Corrija los valores indicados. No se ejecutó el reporte.
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+    {% if period_basis_label %}<p class="form-text mt-3 mb-0">El período filtra por {{ period_basis_label }}.</p>{% endif %}
+    {% if report_type == "financial-summary" %}<p class="form-text mb-0">Ingresos, costos y resultado corresponden al período; los montos exigibles, cobros/pagos netos y saldos reflejan el acumulado confirmado a la fecha.</p>{% endif %}
+    {% if overdue_description %}<p class="form-text mt-3 mb-0">{{ overdue_description }}</p>{% endif %}
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead>
+        {% if report_type == "commissions" and not commission_detail_mode %}
+          <tr><th>Broker</th><th>Órdenes</th><th>Comisión calculada USD</th><th>Deuda aplicada USD</th><th>Pagable USD</th><th>Calculadas</th><th>Autorizadas</th><th>Pagadas</th></tr>
+        {% elif report_type == "commissions" %}
+          <tr><th>Orden</th><th>Broker</th><th>Comisión USD</th><th>Estado</th><th>Fecha</th></tr>
+        {% elif report_type == "financial-summary" %}
+          <tr><th>Orden</th><th>Cliente</th><th>Ingresos período USD</th><th>Costos/gastos período USD</th><th>Resultado período USD</th><th>Exigible cliente USD</th><th>Cobrado neto acumulado USD</th><th>Saldo cliente USD</th><th>Exigible transportista USD</th><th>Pagado neto acumulado USD</th><th>Saldo transportista USD</th></tr>
+        {% elif report_type == "pending-collections" or report_type == "pending-payments" %}
+          <tr><th>Orden</th><th>Cliente</th><th>Broker</th><th>Movimiento</th><th>Monto</th><th>Fecha</th></tr>
+        {% else %}
+          <tr><th>Orden</th><th>Cliente</th><th>Broker</th><th>Transportista</th><th>Estado operativo</th><th>Estado de cierre</th><th>Tipo de carga</th><th>Creada</th><th>Entrega</th></tr>
+        {% endif %}
+      </thead>
+      <tbody>
+        {% if not filters_valid %}
+           <tr><td colspan="{% if report_type == 'orders' %}9{% else %}8{% endif %}" class="p-3">Corrija los filtros para consultar resultados.</td></tr>
+        {% elif report_type == "commissions" and not commission_detail_mode %}
+          {% for row in rows %}
+            <tr><td><a href="{{ row.detail_url }}">{{ row.broker__username }}</a></td><td>{{ row.order_count }}</td><td>{{ row.commission_total_usd|floatformat:2 }}</td><td>{{ row.applied_debt_total_usd|floatformat:2 }}</td><td>{{ row.payable_total_usd|floatformat:2 }}</td><td>{{ row.calculated_count }}</td><td>{{ row.authorized_count }}</td><td>{{ row.paid_count }}</td></tr>
+          {% empty %}
+            <tr><td colspan="8" class="p-3">Sin comisiones para los filtros seleccionados.</td></tr>
+          {% endfor %}
+        {% elif report_type == "orders" and report_group_by %}
+          {% for group in order_groups %}
+            <tr class="table-light"><th colspan="9">{{ group.label }}</th></tr>
+            {% for row in group.rows %}{% include "reports/_order_row.html" %}{% endfor %}
+          {% empty %}
+            <tr><td colspan="9" class="p-3">Sin resultados para los filtros seleccionados.</td></tr>
+          {% endfor %}
+        {% else %}
+          {% for row in rows %}
+            {% if report_type == "commissions" %}
+              <tr><td><a href="{% url 'finance:commission-detail' row.pk %}">{{ row.order.number }}</a></td><td>{{ row.broker }}</td><td>{{ row.payable_amount_usd|floatformat:2 }}</td><td>{{ row.get_status_display }}</td><td>{{ row.calculated_at|date:"d/m/Y" }}</td></tr>
+            {% elif report_type == "financial-summary" %}
+              <tr><td>{{ row.number }}</td><td>{{ row.customer.legal_name }}</td><td>{{ row.income_usd|floatformat:2 }}</td><td>{{ row.expenses_usd|floatformat:2 }}</td><td>{{ row.profit_usd|floatformat:2 }}</td><td>{{ row.customer_amount_due_usd|floatformat:2 }}</td><td>{{ row.customer_received_usd|floatformat:2 }}</td><td>{{ row.customer_balance_usd|floatformat:2 }}</td><td>{{ row.carrier_amount_due_usd|floatformat:2 }}</td><td>{{ row.carrier_paid_usd|floatformat:2 }}</td><td>{{ row.carrier_balance_usd|floatformat:2 }}</td></tr>
+            {% elif report_type == "pending-collections" or report_type == "pending-payments" %}
+              <tr><td>{{ row.order.number }}</td><td>{{ row.order.customer.legal_name }}</td><td>{{ row.order.broker }}</td><td>{{ row.movement_type.name }}{% if row.adjustment_of %}<br><small>Ajuste compensatorio #{{ row.adjustment_of_id }}</small>{% endif %}</td><td>{{ row.amount }} {{ row.currency.code|upper }}</td><td>{{ row.transaction_date|date:"d/m/Y" }}</td></tr>
+            {% else %}
+              {% include "reports/_order_row.html" %}
+            {% endif %}
+          {% empty %}
+            <tr><td colspan="8" class="p-3">Sin resultados para los filtros seleccionados.</td></tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white">
+      <nav aria-label="Paginación del reporte">
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% if filter_querystring %}{{ filter_querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% if filter_querystring %}{{ filter_querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

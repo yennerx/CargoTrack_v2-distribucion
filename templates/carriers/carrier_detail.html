@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ carrier.legal_name }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div><p class="eyebrow mb-1">Transportista</p><h1 class="h3 mb-1">{{ carrier.legal_name }}</h1><p class="text-secondary mb-0">{{ carrier.get_carrier_type_display }} · NIT: <code>{{ carrier.nit }}</code></p></div>
+    <div class="d-flex gap-2">
+      {% if perms.carriers.change_carrier %}<a class="btn btn-primary" href="{% url 'carriers:update' carrier.pk %}">Editar</a>{% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'carriers:list' %}">Volver</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-lg-5"><section class="card border-0 shadow-sm h-100"><div class="card-body">
+      <h2 class="h6">Datos generales</h2>
+      <dl class="row small mb-0"><dt class="col-sm-5">Teléfono</dt><dd class="col-sm-7">{{ carrier.primary_phone }}</dd><dt class="col-sm-5">Correo</dt><dd class="col-sm-7">{{ carrier.email }}</dd><dt class="col-sm-5">Dirección</dt><dd class="col-sm-7">{{ carrier.address|default:"No registrada" }}</dd><dt class="col-sm-5">Estado</dt><dd class="col-sm-7">{% if carrier.is_active %}Activo{% else %}Inactivo{% endif %}</dd><dt class="col-sm-5">Validación</dt><dd class="col-sm-7">{% if carrier.is_validated %}Validado{% else %}Pendiente{% endif %}</dd></dl>
+    </div></section></div>
+    <div class="col-lg-7"><section class="card border-0 shadow-sm h-100"><div class="card-body"><h2 class="h6">Unidades o equipos</h2>
+      <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Identificador</th><th>Equipo</th><th>Placa</th><th>Estado</th></tr></thead><tbody>
+        {% for unit in carrier.units.all %}<tr><td>{{ unit.unit_identifier }}</td><td>{{ unit.equipment_type.name }}</td><td>{{ unit.license_plate }}</td><td>{% if unit.is_active %}Activo{% else %}Inactivo{% endif %}</td></tr>{% empty %}<tr><td colspan="4" class="text-secondary">Sin unidades registradas.</td></tr>{% endfor %}
+      </tbody></table></div>
+    </div></section></div>
+  </div>
+
+  <section class="card border-0 shadow-sm mb-4"><div class="card-body"><h2 class="h6">Documentos</h2><div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>Tipo</th><th>Número</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody>
+    {% for document in documents %}<tr><td>{{ document.document_type.name }}</td><td>{{ document.document_number }}</td><td>{{ document.expires_at|date:"d/m/Y" }}</td><td>{% if document.is_expired %}<span class="badge text-bg-danger">Vencido</span>{% elif document.is_expiring_soon %}<span class="badge text-bg-warning">Por vencer</span>{% else %}<span class="badge text-bg-success">Vigente</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4" class="text-secondary">Sin documentos registrados.</td></tr>{% endfor %}
+  </tbody></table></div></div></section>
+
+  <section class="card border-0 shadow-sm mb-4"><div class="card-body"><h2 class="h6">Archivos adjuntos</h2><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Tipo</th><th>Acción</th></tr></thead><tbody>{% for attachment in attachments %}<tr><td>{{ attachment.document_type.name }}</td><td><a href="{% url 'documents:detail' attachment.pk %}" class="btn btn-sm btn-outline-secondary">Gestionar</a></td></tr>{% empty %}<tr><td colspan="2" class="text-secondary">Sin archivos cargados.</td></tr>{% endfor %}</tbody></table></div>{% if perms.documents.add_document %}<form method="post" enctype="multipart/form-data" action="{% url 'documents:carrier_upload' carrier.pk %}" class="border-top pt-3 mt-3"><div class="row g-2"><div class="col-md-4">{{ document_form.document_type.label_tag }}{{ document_form.document_type }}</div><div class="col-md-4">{{ document_form.related_event.label_tag }}{{ document_form.related_event }}</div><div class="col-md-4">{{ document_form.file.label_tag }}{{ document_form.file }}</div></div><button class="btn btn-primary btn-sm mt-3" type="submit">Cargar archivo</button>{% csrf_token %}</form>{% endif %}</div></section>
+
+  {% if can_view_order_history %}
+    <section class="card border-0 shadow-sm mb-4"><div class="card-body">
+      <h2 class="h6">Historial de servicios</h2>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Orden</th><th>Cliente</th><th>Estado operativo</th><th>Estado de cierre</th><th>Recogida</th><th>Entrega</th></tr></thead>
+        <tbody>{% for order in orders %}<tr>
+          <td><a href="{% url 'orders:detail' order.pk %}">{{ order.number }}</a></td>
+          <td>{{ order.customer.legal_name }}</td><td>{{ order.status.name }}</td>
+          <td>{{ order.get_closure_status_display }}</td>
+          <td>{{ order.pickup_date|date:"d/m/Y" }}</td><td>{{ order.delivery_date|date:"d/m/Y" }}</td>
+        </tr>{% empty %}<tr><td colspan="6" class="text-secondary">Sin servicios registrados.</td></tr>{% endfor %}</tbody>
+      </table></div>
+      {% if orders.has_other_pages %}<nav class="mt-3" aria-label="Paginación del historial de servicios"><ul class="pagination pagination-sm mb-0">
+        {% if orders.has_previous %}<li class="page-item"><a class="page-link" href="?orders_page={{ orders.previous_page_number }}">Anterior</a></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ orders.number }} de {{ orders.paginator.num_pages }}</span></li>
+        {% if orders.has_next %}<li class="page-item"><a class="page-link" href="?orders_page={{ orders.next_page_number }}">Siguiente</a></li>{% endif %}
+      </ul></nav>{% endif %}
+    </div></section>
+  {% endif %}
+
+  {% if can_view_payment_history %}
+    <section class="card border-0 shadow-sm mb-4"><div class="card-body">
+      <h2 class="h6">Historial de pagos</h2>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Fecha</th><th>Orden</th><th>Monto</th><th>Estado</th><th>Referencia</th></tr></thead>
+        <tbody>{% for payment in payments %}<tr>
+          <td>{{ payment.transaction_date|date:"d/m/Y" }}</td>
+          <td><a href="{% url 'orders:detail' payment.order_id %}">{{ payment.order.number }}</a></td>
+          <td>{{ payment.currency.code|upper }} {{ payment.amount|floatformat:2 }}</td>
+          <td>{{ payment.get_status_display }}</td><td>{{ payment.reference|default:"-" }}</td>
+        </tr>{% empty %}<tr><td colspan="5" class="text-secondary">Sin pagos registrados.</td></tr>{% endfor %}</tbody>
+      </table></div>
+      {% if payments.has_other_pages %}<nav class="mt-3" aria-label="Paginación del historial de pagos"><ul class="pagination pagination-sm mb-0">
+        {% if payments.has_previous %}<li class="page-item"><a class="page-link" href="?payments_page={{ payments.previous_page_number }}">Anterior</a></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ payments.number }} de {{ payments.paginator.num_pages }}</span></li>
+        {% if payments.has_next %}<li class="page-item"><a class="page-link" href="?payments_page={{ payments.next_page_number }}">Siguiente</a></li>{% endif %}
+      </ul></nav>{% endif %}
+    </div></section>
+  {% endif %}
+
+  {% if perms.carriers.change_carrier and not carrier.is_validated %}<form method="post" action="{% url 'carriers:validate' carrier.pk %}" class="mb-2">{% csrf_token %}<button class="btn btn-success" type="submit">Validar transportista</button></form>{% endif %}
+  {% if perms.carriers.delete_carrier and carrier.is_active %}<form method="post" action="{% url 'carriers:deactivate' carrier.pk %}">{% csrf_token %}<button class="btn btn-outline-danger" type="submit">Desactivar transportista</button></form>{% endif %}
+{% endblock %}

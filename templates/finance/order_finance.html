@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Finanzas {{ order.number }} | CargoTrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+  <div><p class="eyebrow mb-1">Control financiero</p><h1 class="h3">{{ order.number }}</h1></div>
+  <a class="btn btn-outline-secondary" href="{% url 'orders:detail' order.pk %}">Volver a la orden</a>
+</div>
+
+{% if messages %}
+  {% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}" role="status">{{ message }}</div>{% endfor %}
+{% endif %}
+
+<section class="mb-4" aria-labelledby="financial-result-title">
+  <h2 id="financial-result-title" class="h5">Movimientos confirmados netos</h2>
+  <div class="row g-3">
+    <div class="col-md-4"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Ingresos netos USD</span><h3 class="h4">{{ summary.income_usd|floatformat:2 }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Costos y gastos netos USD</span><h3 class="h4">{{ summary.expenses_usd|floatformat:2 }}</h3></div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm"><div class="card-body"><span class="text-secondary">Utilidad/pérdida realizada USD</span><h3 class="h4">{{ summary.profit_usd|floatformat:2 }}</h3></div></div></div>
+  </div>
+</section>
+
+<section class="card border-0 shadow-sm mb-4" aria-labelledby="balances-title">
+  <div class="card-body">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+      <div><h2 id="balances-title" class="h5 mb-1">Saldos económicos</h2><p class="text-secondary mb-0">Solo los cobros y pagos confirmados reducen estos saldos.</p></div>
+      {% if can_register_commercial_adjustment and perms.finance.add_commercialadjustment %}<a class="btn btn-outline-primary btn-sm" href="{% url 'finance:commercial-adjustment-create' order.pk %}">Registrar ajuste comercial</a>{% endif %}
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Concepto</th><th>Monto base USD</th><th>Ajustes aprobados USD</th><th>Monto exigible USD</th><th>Confirmado neto USD</th><th>Saldo USD</th></tr></thead>
+        <tbody>
+          <tr>
+            <th>Cliente</th><td>{{ order.customer_rate|floatformat:2 }}</td><td>{{ summary.customer_adjustment_usd|floatformat:2 }}</td><td>{{ summary.customer_amount_due_usd|floatformat:2 }}</td><td>{{ summary.customer_received_usd|floatformat:2 }}</td>
+            <td>{% if summary.customer_balance_usd < 0 %}A favor del cliente: USD {{ summary.customer_credit_usd|floatformat:2 }}{% else %}USD {{ summary.customer_balance_usd|floatformat:2 }}{% endif %}</td>
+          </tr>
+          <tr>
+            <th>Transportista</th><td>{{ order.carrier_cost|floatformat:2 }}</td><td>{{ summary.carrier_adjustment_usd|floatformat:2 }}</td><td>{{ summary.carrier_amount_due_usd|floatformat:2 }}</td><td>{{ summary.carrier_paid_usd|floatformat:2 }}</td>
+            <td>{% if summary.carrier_balance_usd < 0 %}A favor del transportista: USD {{ summary.carrier_credit_usd|floatformat:2 }}{% else %}USD {{ summary.carrier_balance_usd|floatformat:2 }}{% endif %}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small text-secondary mb-0">Los ajustes comerciales pendientes de aprobación no se incluyen en los montos exigibles.</p>
+  </div>
+</section>
+
+<section class="card border-0 shadow-sm mb-4" aria-labelledby="commercial-adjustments-title">
+  <div class="card-body">
+    <h2 id="commercial-adjustments-title" class="h5">Ajustes comerciales</h2>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Fecha</th><th>Destino</th><th>Ajuste USD</th><th>Motivo/acuerdo</th><th>Referencia</th><th>Estado</th><th>Registro y revisión</th><th></th></tr></thead>
+        <tbody>
+          {% for adjustment in commercial_adjustments %}
+            <tr>
+              <td>{{ adjustment.requested_at|date:"d/m/Y H:i" }}</td>
+              <td>{{ adjustment.get_target_display }}</td>
+              <td>{{ adjustment.amount_usd|floatformat:2 }}</td>
+              <td>{{ adjustment.reason }}</td>
+              <td>{{ adjustment.reference|default:"-" }}</td>
+              <td>{{ adjustment.get_status_display }}</td>
+              <td>{{ adjustment.requested_by }}{% if adjustment.reviewed_by %}<br><small>Revisó {{ adjustment.reviewed_by }} el {{ adjustment.reviewed_at|date:"d/m/Y H:i" }}</small>{% endif %}{% if adjustment.review_observation %}<br><small>{{ adjustment.review_observation }}</small>{% endif %}</td>
+              <td>
+                {% if adjustment.status == "pending" and can_review_commercial_adjustment and perms.finance.change_commercialadjustment %}
+                  <form method="post" action="{% url 'finance:commercial-adjustment-review' adjustment.pk %}">
+                    {% csrf_token %}
+                    <label class="form-label small" for="review-observation-{{ adjustment.pk }}">Observación (obligatoria al rechazar)</label>
+                    <textarea class="form-control form-control-sm" id="review-observation-{{ adjustment.pk }}" name="observation" rows="2"></textarea>
+                    <button class="btn btn-sm btn-outline-success mt-1" name="decision" value="approved" type="submit">Aprobar</button>
+                    <button class="btn btn-sm btn-outline-danger mt-1" name="decision" value="rejected" type="submit">Rechazar</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="8">Sin ajustes comerciales.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="card border-0 shadow-sm">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center">
+      <div><h2 class="h5 mb-1">Movimientos financieros</h2><p class="text-secondary mb-0">{{ summary.pending_movements_count }} pendiente(s) de confirmación · USD {{ summary.pending_movements_usd|floatformat:2 }} registrados.</p></div>
+      {% if perms.finance.add_financialtransaction %}<a class="btn btn-primary btn-sm" href="{% url 'finance:create' order.pk %}">Nuevo movimiento</a>{% endif %}
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Tipo</th><th>Monto</th><th>USD</th><th>Estado</th><th>Fecha</th><th>Registrado por</th><th></th></tr></thead>
+        <tbody>
+          {% for entry in transactions %}
+            <tr>
+              <td>{{ entry.movement_type.name }}{% if entry.cost_type %}<br><small>{{ entry.cost_type.name }}</small>{% endif %}{% if entry.adjustment_of %}<br><small>Compensa movimiento #{{ entry.adjustment_of_id }}</small>{% endif %}</td>
+              <td>{{ entry.amount }} {{ entry.currency.code|upper }}</td><td>{{ entry.base_amount_usd|floatformat:2 }}</td><td>{{ entry.get_status_display }}</td><td>{{ entry.transaction_date|date:"d/m/Y" }}</td><td>{{ entry.created_by }}</td>
+              <td>
+                {% if entry.status == "pending" and perms.finance.change_financialtransaction %}
+                  <form method="post" action="{% url 'finance:confirm' entry.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-success" type="submit">Confirmar</button></form>
+                {% endif %}
+                {% if entry.status == "confirmed" and not entry.adjustment_of and perms.finance.add_financialtransaction %}<a class="btn btn-sm btn-outline-warning" href="{% url 'finance:adjustment' entry.pk %}">Ajuste compensatorio</a>{% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7">Sin movimientos financieros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if perms.finance.change_financialreview %}
+      <hr>
+      <div class="d-flex justify-content-between align-items-center">
+        <span>Validación administrativa: {{ review.get_status_display|default:"Pendiente" }}</span>
+        {% if not review or review.status != "validated" %}<form method="post" action="{% url 'finance:validate' order.pk %}">{% csrf_token %}<button class="btn btn-outline-success btn-sm" type="submit">Validar resumen</button></form>{% endif %}
+      </div>
+    {% endif %}
+    {% if perms.finance.add_commission and review.status == "validated" %}
+      <hr>
+      <div class="d-flex justify-content-between align-items-center">
+        <span>Comisión: {% if commission %}{{ commission.get_status_display }}{% else %}Pendiente de cálculo{% endif %}</span>
+        {% if not commission %}<a class="btn btn-outline-primary btn-sm" href="{% url 'finance:commission-calculate' order.pk %}">Calcular comisión</a>{% else %}<a class="btn btn-outline-primary btn-sm" href="{% url 'finance:commission-detail' commission.pk %}">Ver comisión</a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

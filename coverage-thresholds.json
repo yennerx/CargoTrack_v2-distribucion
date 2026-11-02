@@ -1,0 +1,14 @@
+{
+  "baseline": {
+    "captured_at": "2026-10-14",
+    "commit": "1b47425",
+    "tests_passed": 138,
+    "line_percent": 78.6,
+    "branch_percent": 57.84
+  },
+  "minimum": {
+    "line_percent": 78.6,
+    "branch_percent": 57.84
+  },
+  "policy": "Mínimos derivados de la línea base; no reducir sin justificación de calidad registrada para la versión evaluada."
+}

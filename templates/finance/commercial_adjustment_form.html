@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Ajuste comercial {{ order.number }} | CargoTrack{% endblock %}
+{% block content %}
+<div class="mb-4"><p class="eyebrow mb-1">{{ order.number }}</p><h1 class="h3">Registrar ajuste comercial</h1></div>
+<div class="alert alert-info">El ajuste se aplicará al saldo solo después de su aprobación por la Gerencia administrativa. Use un monto positivo para aumentar o negativo para reducir el monto pactado.</div>
+<form method="post" class="card border-0 shadow-sm">
+  <div class="card-body">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}
+      <div class="mb-3">{{ field.label_tag }}{{ field }}{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}{% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}</div>
+    {% endfor %}
+    <button class="btn btn-primary" type="submit">Enviar a aprobación</button>
+    <a class="btn btn-outline-secondary" href="{% url 'finance:order' order.pk %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

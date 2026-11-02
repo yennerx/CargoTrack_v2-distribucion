@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.label }} | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-xl-8">
+      <div class="placeholder-panel">
+        <span class="badge text-bg-light mb-3">{{ module.status }}</span>
+        <p class="eyebrow mb-2">{{ module.section }}</p>
+        <h1 class="display-6 fw-bold">{{ module.label }}</h1>
+        <p class="lead text-secondary">{{ module.description }}</p>
+        <div class="placeholder-rule"></div>
+        <p class="mb-4">
+          Esta vista forma parte del mapa visual aprobado. La funcionalidad se
+          incorporará en la fase correspondiente del roadmap.
+        </p>
+        <a class="btn btn-primary" href="{% url 'core:home' %}">Volver al panel</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

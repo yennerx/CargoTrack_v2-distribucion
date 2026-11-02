@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Error interno | CargoTrack{% endblock %}
+
+{% block content %}
+  <div class="error-panel text-center">
+    <p class="display-3 fw-bold text-danger mb-2">500</p>
+    <h1 class="h3">Error interno</h1>
+    <p class="text-secondary">Ocurrió un problema inesperado. Intenta nuevamente.</p>
+    <a class="btn btn-primary" href="{% url 'core:home' %}">Volver al inicio</a>
+  </div>
+{% endblock %}
