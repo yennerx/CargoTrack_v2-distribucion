@@ -1,10 +1,10 @@
 # Entregables del Proyecto Final SQA — CargoTrack v2
 
 Este paquete organiza los entregables académicos conforme a las directrices del
-Proyecto Final SQA 2026. El documento original del curso se conserva en el
-repositorio privado de desarrollo y no se distribuye con el código. CargoTrack es
-una aplicación existente del Proyecto de Graduación; SQA comparte su código y sus
-pruebas, sin crear una segunda aplicación.
+Proyecto Final SQA 2026. El enunciado original se conserva como referencia local y
+no forma parte del paquete de distribución. CargoTrack es una aplicación existente
+del Proyecto de Graduación; SQA comparte su código y sus pruebas, sin crear una
+segunda aplicación.
 
 ## Entregables y estado
 
@@ -33,6 +33,8 @@ pruebas, sin crear una segunda aplicación.
   Ruff/Django, pruebas/cobertura y Docker. La regla no exige aprobación humana;
   documenta el gate automático para el proyecto individual. Al volver el repo a
   privado se verificará si el plan disponible mantiene la protección.
+- La regla está activa: el PR de documentación #1 pasó los tres checks requeridos
+  y se fusionó.
 
 ## Privacidad
 

@@ -38,7 +38,8 @@ o al run de coverage.
   los supera. No se cambian umbrales.
 - Durante la publicación temporal, `main` exige PR y los tres checks CI. La regla
   no requiere aprobación humana independiente. Al volver el repositorio a privado,
-  verificar si GitHub mantiene la protección con el plan disponible.
+  verificar si GitHub mantiene la protección con el plan disponible. El PR de
+  documentación #1 pasó los checks requeridos y se fusionó.
 - No se hizo auditoría independiente de la infraestructura LAN, configuración de
   servidor ni respaldos productivos debido a la política de TI.
 - El acta documenta aceptación con observaciones. El soporte adicional ofrecido es
@@ -50,4 +51,5 @@ o al run de coverage.
 - [CI del código evaluado, run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001).
 - [CI de la copia de distribución, run 41499841435](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41499841435).
 - [CI del paquete SQA y SonarCloud condicionado, run 41559042431](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41559042431); SonarCloud se omitió hasta configurar variables y secreto.
+- [CI de `main`, run 41560228982](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41560228982); SonarCloud se omitió hasta completar su configuración.
 - [`Linea-Base-Calidad.md`](Linea-Base-Calidad.md).
