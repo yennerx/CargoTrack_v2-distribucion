@@ -4,15 +4,17 @@
 
 | Métrica | Antes | Después | Cambio |
 |---|---:|---:|---:|
-| Pruebas automatizadas aprobadas | 138 | 176 | +38 |
-| Cobertura de líneas | 78,60 % | 83,91 % | +5,31 puntos porcentuales |
+| Pruebas automatizadas aprobadas | 138 | 198 | +60 |
+| Cobertura de líneas/sentencias | 78,60 % | 84,01 % | +5,41 puntos porcentuales |
 | Cobertura de ramas | 57,84 % | 64,81 % | +6,97 puntos porcentuales |
 | Ruff | Ejecución local registrada | 0 diagnósticos en CI | Análisis automatizado |
 
-La medición final corresponde al run 41530067001 sobre `e62f621`. JUnit registró
-176 pruebas aprobadas, sin fallos, errores ni omisiones. Pasaron Ruff, Django,
-migraciones y el comparador de cobertura; se construyó un artefacto Docker con
-SHA-256.
+La medición final corresponde al run `41580904162`, commit `abd6932`. JUnit registró
+198 pruebas aprobadas, sin fallos, errores ni omisiones. La cobertura fue 84,01 %
+de líneas/sentencias (3.341/3.977) y 64,81 % de ramas (639/986). Pasaron Ruff,
+Django, migraciones, el comparador de cobertura y SonarCloud; se construyó un
+artefacto Docker. El run `41530067001` sobre `e62f621` se conserva como medición
+posterior intermedia de 176 pruebas.
 
 ## Defectos corregidos
 
@@ -46,7 +48,7 @@ confirmaron 0 vulnerabilidades abiertas: los 22 hallazgos están cerrados. El
 dashboard actual informa 0 bugs, 0 vulnerabilidades, 0 code smells, 0,3 % de
 duplicación y 80,2 % coverage Sonar. El scope `apps/` no incluye `templates/`,
 `static/`, Dockerfile ni workflows. Coverage Sonar es una métrica agregada,
-distinta de pytest-cov (83,91 % líneas y 64,81 % ramas, medición anterior).
+distinta de pytest-cov (84,01 % líneas/sentencias y 64,81 % ramas en la medición final).
 
 ## Limitaciones al corte
 
@@ -66,8 +68,9 @@ distinta de pytest-cov (83,91 % líneas y 64,81 % ramas, medición anterior).
 
 ## Referencias
 
-- [CI del código evaluado, run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001).
+- [CI intermedio, run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001).
 - [CI del paquete SQA en `main`, run 41563792328](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41563792328).
 - [SonarCloud CI run 41574835164](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41574835164) y [dashboard del proyecto](https://sonarcloud.io/project/overview?id=yennerx_CargoTrack_v2-distribucion).
 - [PR #6](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/6) y [CI de `main` run 41580904162](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41580904162) confirman regresión, análisis SonarCloud y build aprobados.
+- [CI más reciente, run 41581916656](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41581916656), conserva la misma versión de aplicación y vuelve a aprobar todos los jobs.
 - [`Linea-Base-Calidad.md`](Linea-Base-Calidad.md).

@@ -1,9 +1,9 @@
 # Matriz de pruebas — CargoTrack v2
 
-La suite automatizada contiene 176 pruebas; esta matriz muestra casos
+La suite automatizada actual contiene 198 pruebas; esta matriz muestra casos
 representativos y enlaza con sus archivos fuente. El resultado observado agregado
-corresponde al JUnit del run 41530067001, commit `e62f621`: 176 pasaron, 0 fallaron,
-0 errores y 0 omitidas.
+corresponde al JUnit del run `41580904162`, commit `abd6932`: 198 pasaron, 0 fallaron,
+0 errores y 0 omitidas. La ejecución intermedia `41530067001` registró 176 pruebas.
 
 | ID | Tipo | Módulo/prueba fuente | Entrada y precondición | Resultado esperado | Resultado observado |
 |---|---|---|---|---|---|
@@ -19,18 +19,22 @@ corresponde al JUnit del run 41530067001, commit `e62f621`: 176 pasaron, 0 falla
 | TC-REP-01 | Autorización/regresión | `test_broker_reports_are_scoped_before_filtering_and_rendering` | Broker filtra reporte que podría incluir registros de otro ámbito | Sólo aparecen registros autorizados antes de filtrar/renderizar | Pasó en CI |
 | TC-REP-02 | Seguridad/regresión | `test_customer_report_exports_are_audited_and_csv_formula_values_are_safe` | CSV incluye valores con caracteres de fórmula | Exportación neutraliza fórmulas y queda auditada | Pasó en CI |
 | TC-SQA-01 | Unitario/quality gate | `scripts/test_check_coverage.py` | Cobertura sintética debajo y encima de mínimos | El comparador rechaza incumplimiento y acepta cumplimiento | Pasaron sus 4 pruebas |
+| TC-SQA-02 | Seguridad/regresión | `test_read_only_endpoints_reject_post_requests` (`apps/core/tests.py`) | POST autenticado a las 22 vistas señaladas por `python:S3752` | Las 22 responden HTTP 405 y no ejecutan lógica de consulta | 22 casos pasaron en CI |
 
-## Distribución de los 176 casos
+## Distribución actual de los 198 casos
 
 | Módulo | Casos | Módulo | Casos |
 |---|---:|---|---:|
 | Cuentas | 28 | Auditoría | 10 |
-| Catálogos | 6 | Core | 15 |
+| Catálogos | 6 | Core (incluye 22 métodos HTTP) | 37 |
 | Clientes | 13 | Transportistas | 12 |
 | Órdenes | 24 | Documentos | 6 |
 | Incidencias | 6 | Finanzas | 29 |
 | Reportes | 23 | Comparador de cobertura | 4 |
-| **Total** | **176** |  |  |
+| **Total** | **198** |  |  |
+
+La distribución de módulos refleja la suite de la medición final; los 22 casos
+adicionales son los parámetros de la prueba de métodos HTTP.
 
 Las sesiones manuales por rol y el acta firmada son evidencia de aceptación
 separada de esta matriz automatizada. Sus originales se entregan por la
