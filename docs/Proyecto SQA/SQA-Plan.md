@@ -17,7 +17,7 @@ El proyecto es individual. Las revisiones manuales se registran como autorrevisi
 con alcance, commit, criterios y resultado; no se simula una segunda aprobación
 independiente. pytest/pytest-django cubren pruebas unitarias, de integración y
 regresión. Ruff es el linter seleccionado. SonarCloud complementa el análisis con
-un dashboard de calidad una vez activado.
+un dashboard de calidad activo para el repositorio de distribución.
 
 ## 3. Modelo de calidad y métricas
 
@@ -63,9 +63,11 @@ integración usa `SONAR_ENABLED=true`, las variables `SONAR_ORGANIZATION` y
 `SONAR_PROJECT_KEY`, y el secret `SONAR_TOKEN` en GitHub Actions; el token no se
 incluye en archivos ni se comparte por chat. La primera ejecución CI, run
 `41574835164`, analizó `apps/` y aprobó Quality Gate `Sonar way` para código nuevo.
-Reportó 0 bugs, 22 vulnerabilidades menores abiertas (`python:S3752`), 0 code
-smells, 0,3 % duplicación y 80,1 % coverage Sonar. Los 22 hallazgos requieren
-triage; el Quality Gate no significa que no existan problemas abiertos.
+Reportó 0 bugs, 22 vulnerabilidades menores (`python:S3752`), 0 code smells, 0,3 %
+duplicación y 80,1 % coverage Sonar. Las 22 vistas se revisaron y ahora declaran
+GET como método permitido; la prueba parametrizada verifica rechazo POST. Un nuevo
+análisis queda pendiente para confirmar el cierre en SonarCloud. El Quality Gate
+no implica por sí solo que no existan hallazgos abiertos.
 
 ## 6. Acceso, protección y privacidad
 

@@ -3,6 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from apps.core.access_scope import scope_orders
 from apps.orders.models import Order
@@ -12,11 +13,13 @@ from .models import AuditEvent
 
 
 @login_required
+@require_GET
 def event_list(request):
     return _render_event_list(request)
 
 
 @login_required
+@require_GET
 def order_history(request, order_pk):
     if not request.user.has_perm("audit.view_auditevent"):
         raise PermissionDenied

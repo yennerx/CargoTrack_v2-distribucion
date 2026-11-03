@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
+from django.views.decorators.http import require_GET
 
 from .models import CatalogEntry, CatalogType, SystemConfiguration
 
 
 @login_required
+@require_GET
 def dashboard(request):
     if not request.user.has_perm("catalogs.view_catalogentry"):
         raise PermissionDenied

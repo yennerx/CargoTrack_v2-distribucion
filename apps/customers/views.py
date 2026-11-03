@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.models import AuditEvent
 from apps.core.access_scope import is_broker, scope_customers, scope_orders
@@ -22,6 +22,7 @@ def _require_permission(request, permission):
 
 
 @login_required
+@require_GET
 def customer_list(request):
     _require_permission(request, "customers.view_customer")
     customers = scope_customers(
@@ -40,6 +41,7 @@ def customer_list(request):
 
 
 @login_required
+@require_GET
 def customer_detail(request, pk):
     _require_permission(request, "customers.view_customer")
     customer = get_object_or_404(

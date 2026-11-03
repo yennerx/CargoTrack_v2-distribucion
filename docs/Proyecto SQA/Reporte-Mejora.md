@@ -37,13 +37,14 @@ Gate `Sonar way` quedó **OK para código nuevo**. El resumen actual reporta:
 | Duplicación | 0,3 % |
 | Coverage Sonar | 80,1 % |
 
-Los 22 hallazgos abiertos son de la regla `python:S3752`, que pide especificar los
-métodos HTTP aceptados por vistas. SonarCloud los clasifica como vulnerabilidades;
-deben revisarse endpoint por endpoint antes de corregirlos o justificar una
-excepción. No se han modificado ni cerrado como falsos positivos. El Quality Gate
-evalúa código nuevo y no cierra los hallazgos existentes. El scope `apps/` no
-incluye `templates/`, `static/`, Dockerfile ni workflows. Coverage Sonar es una
-métrica agregada, distinta de pytest-cov (83,91 % líneas y 64,81 % ramas).
+Los 22 hallazgos de la regla `python:S3752` se revisaron uno por uno: las vistas
+afectadas son exclusivamente de consulta/descarga, incluidos los reportes CSV por
+GET. Se añadió `require_GET` a las 22 vistas y una prueba parametrizada confirma
+que POST responde HTTP 405 en todas ellas. La regresión local posterior aprobó 198
+pruebas. La resolución queda pendiente de confirmación por un nuevo análisis
+SonarCloud de esta rama. El scope `apps/` no incluye `templates/`, `static/`,
+Dockerfile ni workflows. Coverage Sonar es una métrica agregada, distinta de
+pytest-cov (83,91 % líneas y 64,81 % ramas, medición anterior).
 
 ## Limitaciones al corte
 

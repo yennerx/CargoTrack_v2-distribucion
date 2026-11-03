@@ -10,8 +10,9 @@
 - GitHub Actions **41574835164**, mismo commit, ejecutó SonarCloud. Quality Gate
   Sonar way: `OK` para código nuevo. En scope `apps/`: 0 bugs, 22 vulnerabilidades
   menores abiertas, 0 code smells, 0,3 % de duplicación y 80,1 % de coverage Sonar.
-  Las vulnerabilidades son 22 hallazgos `python:S3752` sobre métodos HTTP y quedan
-  para triage. El dashboard está en
+  Las 22 vulnerabilidades `python:S3752` se revisaron; `require_GET` se añadió a
+  las vistas identificadas y las pruebas locales verifican rechazo POST. Queda
+  pendiente confirmar su resolución con un análisis nuevo. El dashboard está en
   [SonarQube Cloud](https://sonarcloud.io/project/overview?id=yennerx_CargoTrack_v2-distribucion).
 - Los artifacts CI del run 415651 se descargaron a
   `/tmp/opencode/cargotrack-sqa-distribution-41565119050/`; el paquete agrupado

@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.catalogs.models import CatalogEntry, CatalogType
 from apps.core.access_scope import scope_assigned_orders, scope_incidents
@@ -23,6 +23,7 @@ def require_permission(request, permission):
 
 
 @login_required
+@require_GET
 def incident_list(request):
     require_permission(request, "incidents.view_incident")
     incidents = scope_incidents(
@@ -82,6 +83,7 @@ def incident_create(request, order_pk):
 
 
 @login_required
+@require_GET
 def incident_detail(request, pk):
     require_permission(request, "incidents.view_incident")
     incident = get_object_or_404(

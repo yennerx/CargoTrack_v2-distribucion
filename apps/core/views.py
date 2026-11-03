@@ -97,6 +97,7 @@ def navigation_sections():
 
 
 @login_required
+@require_GET
 def home(request):
     return render(
         request,
@@ -106,6 +107,7 @@ def home(request):
 
 
 @login_required
+@require_GET
 def module_placeholder(request, module_slug):
     module = MODULES.get(module_slug)
     if module is None:

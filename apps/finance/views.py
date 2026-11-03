@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.models import AuditEvent
 from apps.core.access_scope import has_global_data_access, scope_orders
@@ -58,6 +58,7 @@ def visible_transactions(user):
 
 
 @login_required
+@require_GET
 def finance_list(request):
     require_permission(request, "finance.view_financialtransaction")
     entries = FinancialTransaction.objects.select_related(
@@ -67,6 +68,7 @@ def finance_list(request):
 
 
 @login_required
+@require_GET
 def order_finance(request, order_pk):
     require_permission(request, "finance.view_financialtransaction")
     order = get_object_or_404(
@@ -234,6 +236,7 @@ def commercial_adjustment_review(request, pk):
 
 
 @login_required
+@require_GET
 def commission_list(request):
     require_permission(request, "finance.view_commission")
     commissions = Commission.objects.select_related("order", "broker").filter(
@@ -275,6 +278,7 @@ def commission_calculate(request, order_pk):
 
 
 @login_required
+@require_GET
 def commission_detail(request, pk):
     require_permission(request, "finance.view_commission")
     commission = get_object_or_404(
@@ -391,6 +395,7 @@ def debt_apply(request, pk):
 
 
 @login_required
+@require_GET
 def commission_rules(request):
     require_permission(request, "finance.view_commissionrule")
     rules = CommissionRule.objects.select_related("broker", "created_by")

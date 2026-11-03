@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from .admin_forms import (
     ADMIN_REPORT_PERMISSIONS,
@@ -40,6 +41,7 @@ def require_orders_report_permission(request):
 
 
 @login_required
+@require_GET
 def dashboard(request):
     require_orders_report_permission(request)
     metrics = dashboard_metrics({}, user=request.user)
@@ -70,6 +72,7 @@ def dashboard(request):
 
 
 @login_required
+@require_GET
 def report_detail(request, report_type):
     if report_type in dict(ADMIN_REPORTS):
         return administrative_report_detail(request, report_type)

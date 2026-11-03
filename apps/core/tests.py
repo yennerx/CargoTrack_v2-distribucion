@@ -301,6 +301,43 @@ def test_health_check_rejects_non_get_requests(client):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize(
+    "url_name,args",
+    [
+        ("audit:list", ()),
+        ("audit:order_history", (1,)),
+        ("carriers:list", ()),
+        ("carriers:detail", (1,)),
+        ("catalogs:dashboard", ()),
+        ("core:home", ()),
+        ("core:module-placeholder", ("clientes",)),
+        ("customers:list", ()),
+        ("customers:detail", (1,)),
+        ("documents:detail", (1,)),
+        ("documents:download", (1,)),
+        ("finance:list", ()),
+        ("finance:order", (1,)),
+        ("finance:commission-list", ()),
+        ("finance:commission-detail", (1,)),
+        ("finance:commission-rules", ()),
+        ("incidents:list", ()),
+        ("incidents:detail", (1,)),
+        ("orders:list", ()),
+        ("orders:detail", (1,)),
+        ("reports:dashboard", ()),
+        ("reports:detail", ("orders",)),
+    ],
+)
+def test_read_only_endpoints_reject_post_requests(client, url_name, args):
+    user = get_user_model().objects.create_user(username="http-method-user")
+    client.force_login(user)
+
+    response = client.post(reverse(url_name, args=args))
+
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
 def test_not_found_uses_centralized_error_page(client, settings):
     settings.DEBUG = False
 
