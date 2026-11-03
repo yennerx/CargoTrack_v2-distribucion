@@ -36,8 +36,9 @@ o al run de coverage.
 - Ruff es el linter elegido y el reporte del run no tuvo diagnósticos.
 - El Quality Gate de cobertura conserva los mínimos de baseline; la medición final
   los supera. No se cambian umbrales.
-- La protección de `main` debe verificarse mientras la copia esté pública. Si se
-  pierde al volver a privada, se registra esa limitación conforme al plan GitHub.
+- Durante la publicación temporal, `main` exige PR y los tres checks CI. La regla
+  no requiere aprobación humana independiente. Al volver el repositorio a privado,
+  verificar si GitHub mantiene la protección con el plan disponible.
 - No se hizo auditoría independiente de la infraestructura LAN, configuración de
   servidor ni respaldos productivos debido a la política de TI.
 - El acta documenta aceptación con observaciones. El soporte adicional ofrecido es
@@ -48,4 +49,5 @@ o al run de coverage.
 
 - [CI del código evaluado, run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001).
 - [CI de la copia de distribución, run 41499841435](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41499841435).
+- [CI del paquete SQA y SonarCloud condicionado, run 41559042431](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41559042431); SonarCloud se omitió hasta configurar variables y secreto.
 - [`Linea-Base-Calidad.md`](Linea-Base-Calidad.md).

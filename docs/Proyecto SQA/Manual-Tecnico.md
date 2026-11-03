@@ -62,6 +62,15 @@ docker compose exec web python manage.py makemigrations --check --dry-run
 docker compose exec web pytest -q
 ```
 
+## Protección de la rama
+
+Mientras el repositorio está público, la rama `main` tiene protección activa:
+requiere un PR, los checks nombrados de Ruff/Django, PostgreSQL/pytest y build
+Docker, y resolución de conversaciones. Está configurada con cero aprobaciones
+humanas porque el proyecto es individual; la revisión automática de CI es el gate.
+Al devolver el repositorio a privado, comprobar si GitHub conserva estas reglas
+con el plan disponible.
+
 ## Artifact y privacidad
 
 GitHub Actions conserva los artifacts por 30 días. Descargar JUnit, coverage,

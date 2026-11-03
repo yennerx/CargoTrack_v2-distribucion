@@ -29,9 +29,10 @@ pruebas, sin crear una segunda aplicación.
   secreto se configuren en GitHub.
 - Se conservan los umbrales actuales de líneas y ramas. La medición final supera
   60 % en ambas métricas.
-- La protección de `main` se verificará durante la publicación temporal pública.
-  Si no está disponible al regresar el repositorio a privado, se documentará como
-  limitación; no se afirmará que existe una regla que no esté activa.
+- Durante la revisión pública, `main` requiere PR y aprobación de los checks de
+  Ruff/Django, pruebas/cobertura y Docker. La regla no exige aprobación humana;
+  documenta el gate automático para el proyecto individual. Al volver el repo a
+  privado se verificará si el plan disponible mantiene la protección.
 
 ## Privacidad
 
