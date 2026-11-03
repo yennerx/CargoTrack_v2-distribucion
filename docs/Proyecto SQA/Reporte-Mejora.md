@@ -49,7 +49,5 @@ o al run de coverage.
 ## Referencias
 
 - [CI del código evaluado, run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001).
-- [CI de la copia de distribución, run 41499841435](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41499841435).
-- [CI del paquete SQA y SonarCloud condicionado, run 41559042431](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41559042431); SonarCloud se omitió hasta configurar variables y secreto.
-- [CI de `main`, run 41560228982](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41560228982); SonarCloud se omitió hasta completar su configuración.
+- [CI del paquete SQA en `main`, run 41562695269](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41562695269); SonarCloud se omitió hasta configurar variables y secreto.
 - [`Linea-Base-Calidad.md`](Linea-Base-Calidad.md).
