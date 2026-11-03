@@ -12,18 +12,19 @@
 - GitHub Actions **41559042431** pasó Ruff/Django, pruebas/cobertura y build para
   el paquete SQA distribuido. SonarCloud se omitió porque aún no se configuraron
   las variables/secret de la cuenta; no hay métricas Sonar que reportar todavía.
-- GitHub Actions **41560228982** volvió a pasar los tres jobs en `main`, commit
-  `147041cd`. JUnit: 176 pruebas, 0 fallos, 0 errores y 0 omitidas; SonarCloud se
-  omitió porque aún no hay configuración de cuenta. Su artifact Docker tiene
-  SHA-256 `8fdaa6ab2e064eed5f6a1b257c6d2f08688eab55a8111f13f1b31814393cde91`.
-- GitHub Actions **41562695269**, commit de distribución `db28962`, volvió a pasar
-  Ruff/Django, pruebas/cobertura PostgreSQL y build Docker; SonarCloud se omitió
-  porque falta su configuración.
-- Artifacts descargados en `/tmp/opencode/cargotrack-sqa-distribution-41562695269/`.
-  SHA-256 del Docker: `7a90f49ca8c82b1084d2b0c27150c684b1d6dc195dcc8ab197760992ed1c9955`.
+- GitHub Actions **41563792328**, commit de distribución `f722db4`, pasó
+  Ruff/Django, migraciones, quality gate de cobertura, 176 pruebas y build Docker.
+  SonarCloud se omitió porque faltan sus variables y el secreto.
+- Los artifacts de ese run se descargaron a
+  `/tmp/opencode/cargotrack-sqa-distribution-41563792328/`. El SHA-256 de Docker es
+  `cfc8516d1cae930b72bd9cbf5c4e985ce869eaeba488ffc564b6b40744a93199`; el paquete
+  de entrega preparado localmente tiene SHA-256
+  `5fe5784e9e2ef13d56154c1eb80dfea1b1406399766b36a7a3a29ed74cc7663d`.
 - El [PR #1](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/1) pasó los
-  checks requeridos y se fusionó. La regla de `main` exige PR y esos checks durante
-  la publicación temporal.
+  checks requeridos y se fusionó; documentó la regla de protección. El [PR
+  #3](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/3) pasó los mismos
+  checks y actualizó el manifiesto de artefactos. `main` exige PR y checks durante
+  la publicación temporal, sin aprobación humana independiente.
 - La última ejecución del repositorio de distribución está enlazada en
   [Actions](https://github.com/yennerx/CargoTrack_v2-distribucion/actions).
 
