@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.models import AuditEvent
 from apps.carriers.models import Carrier
@@ -67,6 +67,7 @@ def carrier_document_upload(request, pk):
 
 
 @login_required
+@require_GET
 def document_detail(request, pk):
     require_permission(request, "documents.view_document")
     document = get_object_or_404(
@@ -105,6 +106,7 @@ def version_upload(request, pk):
 
 
 @login_required
+@require_GET
 def version_download(request, pk):
     require_permission(request, "documents.view_document")
     version = get_object_or_404(

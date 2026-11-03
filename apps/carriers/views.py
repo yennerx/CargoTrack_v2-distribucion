@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.models import AuditEvent
 from apps.core.access_scope import is_broker, scope_carriers, scope_orders
@@ -38,6 +38,7 @@ def carrier_context(carrier):
 
 
 @login_required
+@require_GET
 def carrier_list(request):
     require_permission(request, "carriers.view_carrier")
     carriers = scope_carriers(Carrier.objects.all(), request.user)
@@ -54,6 +55,7 @@ def carrier_list(request):
 
 
 @login_required
+@require_GET
 def carrier_detail(request, pk):
     require_permission(request, "carriers.view_carrier")
     carrier = get_object_or_404(

@@ -9,7 +9,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.models import AuditEvent
 from apps.catalogs.models import CatalogEntry, CatalogType
@@ -40,6 +40,7 @@ def _require_dispatcher(request):
 
 
 @login_required
+@require_GET
 def order_list(request):
     _require_permission(request, "orders.view_order")
     orders = scope_orders(Order.objects.select_related(
@@ -87,6 +88,7 @@ def order_list(request):
 
 
 @login_required
+@require_GET
 def order_detail(request, pk):
     _require_permission(request, "orders.view_order")
     order = get_object_or_404(
