@@ -77,6 +77,7 @@ pruebas/cobertura PostgreSQL y construcción Docker. La protección se configur�
 sin adquirir un plan de pago; exige PR y CI aprobada, pero no aprobación humana
 independiente. Al volver el repo a privado se verificará si el plan disponible
 mantiene esas reglas; no se afirmará que sigue protegido si GitHub las desactiva.
+El PR de documentación #1 pasó los checks y se fusionó.
 
 Los archivos de acta, implementación y capturas empresariales permanecen fuera
 de Git y se entregan únicamente por la plataforma universitaria según las

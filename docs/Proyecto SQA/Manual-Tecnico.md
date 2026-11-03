@@ -69,7 +69,7 @@ requiere un PR, los checks nombrados de Ruff/Django, PostgreSQL/pytest y build
 Docker, y resolución de conversaciones. Está configurada con cero aprobaciones
 humanas porque el proyecto es individual; la revisión automática de CI es el gate.
 Al devolver el repositorio a privado, comprobar si GitHub conserva estas reglas
-con el plan disponible.
+con el plan disponible. El PR #1 pasó los checks requeridos y se fusionó.
 
 ## Artifact y privacidad
 

@@ -18,7 +18,9 @@ de la línea base no se archivó. No se reconstruyen resultados retrospectivos.
 
 ## Medición posterior
 
-GitHub Actions run 41530067001 sobre `e62f621` produjo estos resultados:
+GitHub Actions run 41530067001 sobre `e62f621` produjo estos resultados. La
+reejecución 41560228982 sobre `147041c` aprobó nuevamente la suite y cobertura;
+entre ambos commits sólo se actualizó documentación.
 
 | Indicador final | Resultado | Variación |
 |---|---:|---:|
@@ -35,4 +37,5 @@ es de dos mediciones, no evidencia de una tendencia sostenida.
 
 - Baseline/umbrales: `coverage-thresholds.json`, commit `1b47425`.
 - Resultado posterior: [GitHub Actions run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001), commit `e62f621`.
+- Reejecución de distribución: [GitHub Actions run 41560228982](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41560228982), commit `147041c`.
 - Regresión adicional de 176 pruebas: registro local del 2026-10-30, commit `31494ca`.

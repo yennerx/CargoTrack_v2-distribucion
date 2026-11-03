@@ -12,6 +12,13 @@
 - GitHub Actions **41559042431** pasó Ruff/Django, pruebas/cobertura y build para
   el paquete SQA distribuido. SonarCloud se omitió porque aún no se configuraron
   las variables/secret de la cuenta; no hay métricas Sonar que reportar todavía.
+- GitHub Actions **41560228982** volvió a pasar los tres jobs en `main`, commit
+  `147041cd`. JUnit: 176 pruebas, 0 fallos, 0 errores y 0 omitidas; SonarCloud se
+  omitió porque aún no hay configuración de cuenta. Su artifact Docker tiene
+  SHA-256 `8fdaa6ab2e064eed5f6a1b257c6d2f08688eab55a8111f13f1b31814393cde91`.
+- El [PR #1](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/1) pasó los
+  checks requeridos y se fusionó. La regla de `main` exige PR y esos checks durante
+  la publicación temporal.
 - La última ejecución del repositorio de distribución está enlazada en
   [Actions](https://github.com/yennerx/CargoTrack_v2-distribucion/actions).
 
