@@ -7,7 +7,8 @@
 5. Matriz de pruebas y suite automatizada de 176 casos.
 6. Línea base: 78,60 % de líneas, 57,84 % de ramas y 138 pruebas.
 7. Resultado: 83,91 % de líneas, 64,81 % de ramas y 176 pruebas.
-8. Dashboard de SonarCloud (sólo después de una ejecución exitosa) y reporte Ruff.
+8. Dashboard SonarCloud: gate de código nuevo, coverage, bugs, hallazgos menores,
+   code smells y duplicación; añadir el reporte Ruff.
 9. Limitaciones: protección de rama, deuda residual y controles LAN no auditados.
 10. Conclusiones y referencias/evidencia.
 

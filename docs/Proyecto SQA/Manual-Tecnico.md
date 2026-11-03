@@ -2,8 +2,9 @@
 
 ## Componentes del workflow
 
-El pipeline vive en `.github/workflows/quality.yml`, se ejecuta en push, pull
-request y `workflow_dispatch`, y conserva los tres jobs acordados:
+El pipeline de la copia de distribución vive en `.github/workflows/quality.yml`,
+se ejecuta en push, pull request y `workflow_dispatch`, y conserva los tres jobs
+acordados:
 
 | Job | Función | Evidencia |
 |---|---|---|
@@ -23,23 +24,26 @@ jobs; no se crea un cuarto job.
 3. pytest debe aprobar y `scripts/check_coverage.py` debe aceptar líneas y ramas
    separadas contra `coverage-thresholds.json`.
 4. Docker sólo se construye cuando análisis y pruebas pasan.
-5. Con SonarCloud activo, `sonar.qualitygate.wait=true` hace fallar el job de
-   pruebas si el Quality Gate no aprueba.
+5. El scanner SonarCloud espera el Quality Gate mediante
+   `sonar.qualitygate.wait=true`; si no aprueba, falla el job de pruebas. El run
+   `41574835164` confirmó su ejecución.
 
-## Activar SonarCloud
+## SonarCloud: configuración y uso
 
-1. Crear/enlazar el proyecto CargoTrack en SonarQube Cloud (GitHub Actions).
-2. Registrar como variables del repositorio `SONAR_ENABLED=true`,
-   `SONAR_ORGANIZATION` y `SONAR_PROJECT_KEY` usando los valores que proporciona
-   SonarCloud.
-3. Guardar `SONAR_TOKEN` sólo en GitHub Actions Secrets.
-4. Confirmar que `sqa-artifacts/coverage.xml` aparece en el dashboard y revisar
-   Quality Gate, bugs, code smells y duplicación.
-5. No compartir el token en archivos, commits, capturas o mensajes.
+El proyecto está enlazado a SonarQube Cloud y el repositorio tiene las variables
+`SONAR_ENABLED=true`, `SONAR_ORGANIZATION`, `SONAR_PROJECT_KEY` y el secret
+`SONAR_TOKEN`. El token sólo se gestiona en GitHub Actions Secrets; no se comparte
+por chat ni se escribe en archivos. Si se rota, actualizar el secret de GitHub sin
+cambiar el workflow.
 
-El paso Sonar se omite cuando `SONAR_ENABLED` no está activo. No se debe indicar
-que el dashboard está funcionando hasta que la ejecución aparezca en SonarCloud.
-Los PRs de forks no reciben el token y no ejecutan el scanner.
+La ejecución CI `41574835164` importó `sqa-artifacts/coverage.xml`, escaneó
+`apps/`, mostró el Quality Gate `Sonar way` y publicó el dashboard. El scanner se
+omite si `SONAR_ENABLED` no está activo. PRs de forks no reciben el token y no
+ejecutan el scanner.
+
+La primera medición reportó 22 hallazgos MINOR `python:S3752` sobre métodos HTTP
+permitidos. Deben triagearse con los contratos de cada vista; no cerrar como falsos
+positivos sin justificación. El gate OK corresponde a condiciones de código nuevo.
 
 SonarQube Cloud analiza el código fuente en el servicio del proveedor. La
 autorización para este proyecto se basa en la decisión del responsable de

@@ -25,15 +25,29 @@ del repositorio privado de desarrollo.
 
 ## Métricas SonarCloud
 
-El pipeline incluye una ejecución SonarCloud opcional, configurada para producir
-bugs, code smells, duplicación y Quality Gate. Estas métricas **no se consideran
-obtenidas** hasta crear el proyecto, agregar sus variables/secretos de GitHub y
-completar una ejecución exitosa. No se atribuyen métricas Sonar al run de baseline
-o al run de coverage.
+La primera ejecución SonarCloud CI fue el run `41574835164` sobre el commit
+`ad1c2def`, con el proyecto escaneado bajo scope `apps/` (7.825 NCLOC). El Quality
+Gate `Sonar way` quedó **OK para código nuevo**. El resumen actual reporta:
+
+| Métrica SonarCloud | Resultado |
+|---|---:|
+| Bugs abiertos | 0 |
+| Vulnerabilidades abiertas | 22, todas severidad MINOR/impacto bajo |
+| Code smells abiertos | 0 |
+| Duplicación | 0,3 % |
+| Coverage Sonar | 80,1 % |
+
+Los 22 hallazgos abiertos son de la regla `python:S3752`, que pide especificar los
+métodos HTTP aceptados por vistas. SonarCloud los clasifica como vulnerabilidades;
+deben revisarse endpoint por endpoint antes de corregirlos o justificar una
+excepción. No se han modificado ni cerrado como falsos positivos. El Quality Gate
+evalúa código nuevo y no cierra los hallazgos existentes. El scope `apps/` no
+incluye `templates/`, `static/`, Dockerfile ni workflows. Coverage Sonar es una
+métrica agregada, distinta de pytest-cov (83,91 % líneas y 64,81 % ramas).
 
 ## Limitaciones al corte
 
-- Ruff es el linter elegido y el reporte del run no tuvo diagnósticos.
+- Ruff es el linter elegido y el reporte CI no tuvo diagnósticos.
 - El Quality Gate de cobertura conserva los mínimos de baseline; la medición final
   los supera. No se cambian umbrales.
 - Durante la publicación temporal, `main` exige PR y los tres checks CI. La regla
@@ -44,10 +58,12 @@ o al run de coverage.
   servidor ni respaldos productivos debido a la política de TI.
 - El acta documenta aceptación con observaciones. El soporte adicional ofrecido es
   una cortesía fuera del alcance inicial, no un defecto ni criterio SQA pendiente.
-- No se registró una suite E2E automatizada ni análisis de dependencias.
+- No se registró una suite E2E automatizada ni prueba de penetración. El workflow
+  no tiene un job separado de análisis de dependencias.
 
 ## Referencias
 
 - [CI del código evaluado, run 41530067001](https://github.com/yennerx/CargoTrack_v2/actions/runs/41530067001).
-- [CI del paquete SQA en `main`, run 41563792328](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41563792328); SonarCloud se omitió hasta configurar variables y secreto.
+- [CI del paquete SQA en `main`, run 41563792328](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41563792328).
+- [SonarCloud CI run 41574835164](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41574835164) y [dashboard del proyecto](https://sonarcloud.io/project/overview?id=yennerx_CargoTrack_v2-distribucion).
 - [`Linea-Base-Calidad.md`](Linea-Base-Calidad.md).
