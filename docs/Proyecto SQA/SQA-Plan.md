@@ -33,12 +33,13 @@ reporte de mejora.
 
 ## 4. Flujo CI actual: tres jobs y cuatro etapas conceptuales
 
-El archivo `.github/workflows/quality.yml` se ejecuta en `push`, `pull_request` y
-`workflow_dispatch`. Se conserva la estructura de tres jobs acordada:
+En `CargoTrack_v2-distribucion`, `.github/workflows/quality.yml` se ejecuta en
+`push`, `pull_request` y `workflow_dispatch`. Se conserva la estructura de tres
+jobs acordada:
 
 | Etapa conceptual | Job/pasos existentes | Evidencia producida |
 |---|---|---|
-| Analyze | `static-analysis`: Ruff y Django check; análisis SonarCloud se añade al job de pruebas | Ruff JSON y Quality Gate cuando SonarCloud esté activado |
+| Analyze | `static-analysis`: Ruff y Django check; SonarCloud se ejecuta en el job de pruebas después de cobertura | Ruff JSON y Quality Gate SonarCloud |
 | Test | `tests-and-coverage`: PostgreSQL limpio, migraciones, pytest, cobertura y comparador | JUnit, coverage XML/JSON/HTML |
 | Build | `docker-artifact`, dependiente de análisis y pruebas | Imagen Docker `.tar.gz` y SHA-256 |
 | Report | Pasos de publicación dentro de los jobs | Artefactos de análisis, pruebas y build en GitHub Actions |
@@ -54,21 +55,17 @@ pasos dentro de esos jobs, no como un cuarto job separado.
 - pytest debe pasar y `scripts/check_coverage.py` debe aceptar las coberturas
   mínimas separadas actuales.
 - Docker sólo se empaqueta cuando los jobs de análisis y pruebas aprueban.
-- Cuando SonarCloud se active, `sonar.qualitygate.wait=true` hace fallar el job si
-  su Quality Gate falla.
+- `sonar.qualitygate.wait=true` hace fallar el job si el Quality Gate SonarCloud
+  falla. El run inicial aprobó el gate de código nuevo.
 
-Ruff permanece como linter elegido. SonarCloud recibe el análisis del código
-fuente para calcular bugs, code smells, duplicación y métricas de cobertura. La
-integración requiere enlazar el proyecto y establecer en GitHub:
-
-1. Variable `SONAR_ENABLED=true`.
-2. Variable `SONAR_ORGANIZATION` con la clave de la organización SonarCloud.
-3. Variable `SONAR_PROJECT_KEY` con la clave asignada al proyecto.
-4. Secret `SONAR_TOKEN` guardado en GitHub Actions Secrets.
-
-El token no se incluye en archivos ni se comparte por chat. Hasta completar la
-configuración y obtener un análisis exitoso, los resultados SonarCloud se marcan
-como pendientes; no se inventan métricas.
+Ruff permanece como linter elegido y SonarCloud complementa el dashboard. La
+integración usa `SONAR_ENABLED=true`, las variables `SONAR_ORGANIZATION` y
+`SONAR_PROJECT_KEY`, y el secret `SONAR_TOKEN` en GitHub Actions; el token no se
+incluye en archivos ni se comparte por chat. La primera ejecución CI, run
+`41574835164`, analizó `apps/` y aprobó Quality Gate `Sonar way` para código nuevo.
+Reportó 0 bugs, 22 vulnerabilidades menores abiertas (`python:S3752`), 0 code
+smells, 0,3 % duplicación y 80,1 % coverage Sonar. Los 22 hallazgos requieren
+triage; el Quality Gate no significa que no existan problemas abiertos.
 
 ## 6. Acceso, protección y privacidad
 

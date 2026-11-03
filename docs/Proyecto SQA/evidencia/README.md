@@ -2,27 +2,26 @@
 
 ## Evidencia automatizada disponible
 
-- GitHub Actions **41530067001**, commit `e62f621`: 176 pruebas aprobadas, 83,91 %
-  de líneas y 64,81 % de ramas; Ruff, Django, migraciones, coverage gate y build
-  Docker pasaron.
+- GitHub Actions **41565119050**, commit `ad1c2def`: Ruff/Django, migraciones,
+  coverage gate, 176 pruebas (0 fallos/errores/omitidas) y build Docker pasaron.
+  pytest-cov registró 83,91 % de líneas y 64,81 % de ramas; Ruff JSON fue `[]`.
 - SHA-256 de la imagen Docker de ese run:
-  `980891cf64950354d89734a824d93cc5f5e92eddfed8b95d5f4f4dce8c9c0ba2`.
-- GitHub Actions **41537327313** ejecutó correctamente el workflow tras la
-  actualización documental.
-- GitHub Actions **41559042431** pasó Ruff/Django, pruebas/cobertura y build para
-  el paquete SQA distribuido. SonarCloud se omitió porque aún no se configuraron
-  las variables/secret de la cuenta; no hay métricas Sonar que reportar todavía.
-- GitHub Actions **41563792328**, commit de distribución `f722db4`, pasó
-  Ruff/Django, migraciones, quality gate de cobertura, 176 pruebas y build Docker.
-  SonarCloud se omitió porque faltan sus variables y el secreto.
-- Los artifacts de ese run se descargaron a
-  `/tmp/opencode/cargotrack-sqa-distribution-41563792328/`. El SHA-256 de Docker es
-  `cfc8516d1cae930b72bd9cbf5c4e985ce869eaeba488ffc564b6b40744a93199`; el paquete
-  de entrega preparado localmente tiene SHA-256
-  `5fe5784e9e2ef13d56154c1eb80dfea1b1406399766b36a7a3a29ed74cc7663d`.
+  `82c6f5437acdc125593750ea6d94c80eed8a61a7f9fddd801ebea12b07c55fbd`.
+- GitHub Actions **41574835164**, mismo commit, ejecutó SonarCloud. Quality Gate
+  Sonar way: `OK` para código nuevo. En scope `apps/`: 0 bugs, 22 vulnerabilidades
+  menores abiertas, 0 code smells, 0,3 % de duplicación y 80,1 % de coverage Sonar.
+  Las vulnerabilidades son 22 hallazgos `python:S3752` sobre métodos HTTP y quedan
+  para triage. El dashboard está en
+  [SonarQube Cloud](https://sonarcloud.io/project/overview?id=yennerx_CargoTrack_v2-distribucion).
+- Los artifacts CI del run 415651 se descargaron a
+  `/tmp/opencode/cargotrack-sqa-distribution-41565119050/`; el paquete agrupado
+  para la universidad está en
+  `/tmp/opencode/CargoTrack_SQA_artifacts_run41565119050_ad1c2def.tar.gz` y su
+  SHA-256 es `7738e26e0367cf25b680eb62e4ab09f389b1b5274b5f1b3406b58d93536cef38`.
+  Estos archivos no se versionan.
 - El [PR #1](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/1) pasó los
   checks requeridos y se fusionó; documentó la regla de protección. El [PR
-  #3](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/3) pasó los mismos
+  #4](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/4) pasó los mismos
   checks y actualizó el manifiesto de artefactos. `main` exige PR y checks durante
   la publicación temporal, sin aprobación humana independiente.
 - La última ejecución del repositorio de distribución está enlazada en
