@@ -35,8 +35,11 @@ data/Adjuntos/*
 # Docker
 docker-compose.override.yml
 
-# Material interno/local no incluido en la distribución
-docs/
+# Sólo la entrega SQA está permitida en docs; el resto de la documentación interna queda excluida.
+/docs/*
+!/docs/Proyecto SQA/
+!/docs/Proyecto SQA/**
+/docs/Proyecto SQA/Proyecto Final 2026.md
 AGENTS.md
 README.internal.md
 README.private.md
