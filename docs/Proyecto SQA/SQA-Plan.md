@@ -24,8 +24,8 @@ un dashboard de calidad activo para el repositorio de distribución.
 La medición se hace sobre `apps/`, con cobertura separada de líneas/sentencias y
 ramas. La línea base registrada el 2026-10-14 es 78,60 % de líneas y 57,84 % de
 ramas, con 138 pruebas. Los mínimos se mantienen según la decisión del proyecto.
-En el run 41530067001, commit `e62f621`, se obtuvieron 83,91 % de líneas, 64,81 %
-de ramas y 176 pruebas aprobadas.
+La medición final del run `41580904162`, commit `abd6932`, aprobó 198 pruebas y
+obtuvo 84,01 % de líneas/sentencias y 64,81 % de ramas.
 
 La cobertura no sustituye la revisión de calidad de las pruebas, autorización,
 riesgos ni aceptación. Los defectos confirmados y su estado se resumen en el

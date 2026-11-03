@@ -2,9 +2,11 @@
 
 ## Evidencia automatizada disponible
 
-- GitHub Actions **41565119050**, commit `ad1c2def`: Ruff/Django, migraciones,
-  coverage gate, 176 pruebas (0 fallos/errores/omitidas) y build Docker pasaron.
-  pytest-cov registró 83,91 % de líneas y 64,81 % de ramas; Ruff JSON fue `[]`.
+- Evidencia del primer paquete de distribución: GitHub Actions **41565119050**,
+  commit `ad1c2def`: Ruff/Django, migraciones, coverage gate, 176 pruebas (0
+  fallos/errores/omitidas) y build Docker pasaron. pytest-cov registró 83,91 % de
+  líneas y 64,81 % de ramas; Ruff JSON fue `[]`. Esta es una medición intermedia;
+  la evaluación final está en el run 41581916656.
 - SHA-256 de la imagen Docker de ese run:
   `82c6f5437acdc125593750ea6d94c80eed8a61a7f9fddd801ebea12b07c55fbd`.
 - GitHub Actions **41574835164**, mismo commit, ejecutó SonarCloud. Quality Gate
@@ -31,10 +33,12 @@
 - El [PR #6](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/6) corrigió
   los hallazgos de métodos HTTP y se fusionó en `abd6932`; el análisis de `main`
   quedó registrado en [run 41580904162](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41580904162).
+- El run actual de referencia es [41581916656](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41581916656), commit `0ea0fb75`. Aprobó Ruff/Django, las 198 pruebas con cobertura, SonarCloud y Docker. JUnit, coverage XML/JSON/HTML, Ruff JSON y el artefacto Docker se descargaron a `/tmp/opencode/cargotrack-sqa-run-41581916656/` para preparar la entrega; ese directorio no se versiona.
+- SHA-256 del artefacto Docker de `41581916656`: `2e0b7978a4989aad6c269d6642abafc488547318edfc79ba418f4892d5a5391d`.
 
-La descarga local de coverage, JUnit, Ruff JSON e imagen Docker se prepara fuera
-del repositorio para cargarla en la plataforma universitaria antes de la
-expiración de Actions.
+Los artefactos descargados son de la versión de distribución evaluada; cargar los
+archivos requeridos a la plataforma universitaria antes de que venza su retención
+en Actions.
 
 ## Evidencia empresarial
 
