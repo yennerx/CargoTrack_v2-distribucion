@@ -42,8 +42,10 @@ omite si `SONAR_ENABLED` no está activo. PRs de forks no reciben el token y no
 ejecutan el scanner.
 
 La primera medición reportó 22 hallazgos MINOR `python:S3752` sobre métodos HTTP
-permitidos. Deben triagearse con los contratos de cada vista; no cerrar como falsos
-positivos sin justificación. El gate OK corresponde a condiciones de código nuevo.
+permitidos. Se revisaron los contratos, se añadió `require_GET` a las vistas de
+consulta/descarga y se comprobó POST → HTTP 405. El análisis de `main` en el run
+`41580904162` confirmó 0 hallazgos abiertos. El Quality Gate inicial evaluó código
+nuevo; los issues se cerraron tras el análisis posterior.
 
 SonarQube Cloud analiza el código fuente en el servicio del proveedor. La
 autorización para este proyecto se basa en la decisión del responsable de

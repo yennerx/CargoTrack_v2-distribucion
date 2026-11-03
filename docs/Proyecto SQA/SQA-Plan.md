@@ -65,9 +65,9 @@ incluye en archivos ni se comparte por chat. La primera ejecución CI, run
 `41574835164`, analizó `apps/` y aprobó Quality Gate `Sonar way` para código nuevo.
 Reportó 0 bugs, 22 vulnerabilidades menores (`python:S3752`), 0 code smells, 0,3 %
 duplicación y 80,1 % coverage Sonar. Las 22 vistas se revisaron y ahora declaran
-GET como método permitido; la prueba parametrizada verifica rechazo POST. Un nuevo
-análisis queda pendiente para confirmar el cierre en SonarCloud. El Quality Gate
-no implica por sí solo que no existan hallazgos abiertos.
+GET como método permitido; la prueba parametrizada verifica rechazo POST. Tras el
+merge del PR #6, el run `41580904162` aprobó CI y SonarCloud confirma 0 hallazgos
+`python:S3752` abiertos; el dashboard indica 0 vulnerabilidades y 80,2 % coverage.
 
 ## 6. Acceso, protección y privacidad
 

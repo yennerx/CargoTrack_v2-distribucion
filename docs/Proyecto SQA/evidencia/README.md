@@ -10,9 +10,10 @@
 - GitHub Actions **41574835164**, mismo commit, ejecutó SonarCloud. Quality Gate
   Sonar way: `OK` para código nuevo. En scope `apps/`: 0 bugs, 22 vulnerabilidades
   menores abiertas, 0 code smells, 0,3 % de duplicación y 80,1 % de coverage Sonar.
-  Las 22 vulnerabilidades `python:S3752` se revisaron; `require_GET` se añadió a
-  las vistas identificadas y las pruebas locales verifican rechazo POST. Queda
-  pendiente confirmar su resolución con un análisis nuevo. El dashboard está en
+  En el dashboard inicial había 22 vulnerabilidades `python:S3752`. El PR #6
+  añadió `require_GET` a las vistas identificadas y prueba rechazo POST; el
+  análisis posterior de `main` cerró los 22 hallazgos. El run **41580904162** pasó
+  Ruff/Django, pruebas/cobertura PostgreSQL, SonarCloud y build Docker. Dashboard:
   [SonarQube Cloud](https://sonarcloud.io/project/overview?id=yennerx_CargoTrack_v2-distribucion).
 - Los artifacts CI del run 415651 se descargaron a
   `/tmp/opencode/cargotrack-sqa-distribution-41565119050/`; el paquete agrupado
@@ -27,6 +28,9 @@
   la publicación temporal, sin aprobación humana independiente.
 - La última ejecución del repositorio de distribución está enlazada en
   [Actions](https://github.com/yennerx/CargoTrack_v2-distribucion/actions).
+- El [PR #6](https://github.com/yennerx/CargoTrack_v2-distribucion/pull/6) corrigió
+  los hallazgos de métodos HTTP y se fusionó en `abd6932`; el análisis de `main`
+  quedó registrado en [run 41580904162](https://github.com/yennerx/CargoTrack_v2-distribucion/actions/runs/41580904162).
 
 La descarga local de coverage, JUnit, Ruff JSON e imagen Docker se prepara fuera
 del repositorio para cargarla en la plataforma universitaria antes de la

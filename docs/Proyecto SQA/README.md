@@ -24,9 +24,10 @@ segunda aplicación.
 - El pipeline conserva sus tres jobs. La documentación identifica Analyze, Test,
   Build y Report como etapas conceptuales; Report ocurre en los pasos de
   publicación de artefactos dentro de los jobs existentes.
-- Ruff es el linter elegido y SonarCloud está activo en `apps/`. La primera
-  medición reportó 0 bugs, 22 hallazgos menores, 0 code smells, 0,3 % de
-  duplicación y Quality Gate OK para código nuevo; los hallazgos quedan en triage.
+- Ruff es el linter elegido y SonarCloud está activo en `apps/`. La medición
+  inicial reportó 22 hallazgos menores `python:S3752`; se corrigieron con métodos
+  GET explícitos, pruebas y análisis posterior. `main` quedó con 0 vulnerabilidades
+  abiertas y Quality Gate aprobado.
 - Se conservan los umbrales actuales de líneas y ramas. La medición final supera
   60 % en ambas métricas.
 - Durante la revisión pública, `main` requiere PR y aprobación de los checks de
