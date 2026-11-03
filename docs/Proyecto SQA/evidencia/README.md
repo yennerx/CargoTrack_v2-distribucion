@@ -9,6 +9,9 @@
   `980891cf64950354d89734a824d93cc5f5e92eddfed8b95d5f4f4dce8c9c0ba2`.
 - GitHub Actions **41537327313** ejecutó correctamente el workflow tras la
   actualización documental.
+- GitHub Actions **41559042431** pasó Ruff/Django, pruebas/cobertura y build para
+  el paquete SQA distribuido. SonarCloud se omitió porque aún no se configuraron
+  las variables/secret de la cuenta; no hay métricas Sonar que reportar todavía.
 - La última ejecución del repositorio de distribución está enlazada en
   [Actions](https://github.com/yennerx/CargoTrack_v2-distribucion/actions).
 
