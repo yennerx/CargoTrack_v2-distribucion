@@ -16,8 +16,8 @@ segunda aplicación.
 | Reporte de mejora | [`Reporte-Mejora.md`](Reporte-Mejora.md) | Resultados antes/después, CI y límites documentados |
 | Manual técnico SQA | [`Manual-Tecnico.md`](Manual-Tecnico.md) | Pipeline, quality gates y mantenimiento |
 | Evidencias | [`evidencia/README.md`](evidencia/README.md) | Enlaces a CI y artefactos; evidencia empresarial va por el canal universitario autorizado |
-| Video (4–5 min) | [`Guion-Video.md`](Guion-Video.md) | Guion narrado, pasos y lista de capturas preparados; falta grabar/exportar MP4 |
-| Presentación (8–10 diapositivas) | [`Presentacion.md`](Presentacion.md) | Borrador Markdown completo para revisión; falta trasladar a PowerPoint y exportar PDF |
+| Video explicativo (4–5 min) | [Ver en YouTube](https://youtu.be/0cv77EiVxOw) | Grabado y publicado |
+| Presentación (10 diapositivas) | [`Presentacion-CargoTrack-SQA.pdf`](Presentacion-CargoTrack-SQA.pdf) | Versión final en PDF |
 
 ## Cumplimiento y excepciones registradas
 
