@@ -51,6 +51,5 @@ a las políticas de la empresa; no copiarlos a este directorio.
 
 ## Entregables multimedia
 
-- MP4 de 4–5 minutos: usar [`Guion-Video.md`](../Guion-Video.md); falta grabar.
-- PDF de 8–10 diapositivas: usar [`Presentacion.md`](../Presentacion.md); falta
-  producir/exportar.
+- Video narrado de 4–5 minutos: [ver en YouTube](https://youtu.be/0cv77EiVxOw).
+- Presentación final de 10 diapositivas: [`Presentacion-CargoTrack-SQA.pdf`](../Presentacion-CargoTrack-SQA.pdf).
